@@ -1,0 +1,18 @@
+---
+import Layout from "../layouts/Layout.astro";
+import Hero from "../components/Hero.astro";
+import Features from "../components/Features.astro";
+import Install from "../components/Install.astro";
+import Footer from "../components/Footer.astro";
+
+const title = "Dayseam — Your workday, stitched from the tools you already use.";
+const description =
+  "Dayseam is a local-first macOS app that turns your commits, tickets, and docs into an evidence-linked daily report. Nothing leaves your Mac.";
+---
+
+<Layout title={title} description={description}>
+  <Hero />
+  <Features />
+  <Install />
+  <Footer />
+</Layout>

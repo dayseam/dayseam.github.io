@@ -1,0 +1,46 @@
+---
+const repoUrl = "https://github.com/vedanthvdev/dayseam";
+const year = new Date().getFullYear();
+---
+
+<footer
+  class="border-t border-slate-200/60 py-10 text-sm text-slate-600 dark:border-slate-800 dark:text-slate-400"
+>
+  <div
+    class="container-prose flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+  >
+    <div class="flex flex-col gap-1">
+      <p class="font-semibold text-slate-900 dark:text-white">Dayseam</p>
+      <p>Local-first work reporting for developers. Nothing leaves your Mac.</p>
+    </div>
+    <nav aria-label="Footer" class="flex flex-wrap items-center gap-x-6 gap-y-2">
+      <a
+        href={repoUrl}
+        class="transition hover:text-slate-900 dark:hover:text-white"
+      >
+        GitHub
+      </a>
+      <a
+        href={`${repoUrl}/releases/latest`}
+        class="transition hover:text-slate-900 dark:hover:text-white"
+      >
+        Releases
+      </a>
+      <a
+        href={`${repoUrl}/issues/new/choose`}
+        class="transition hover:text-slate-900 dark:hover:text-white"
+      >
+        Report an issue
+      </a>
+      <a
+        href={`${repoUrl}/blob/master/ARCHITECTURE.md`}
+        class="transition hover:text-slate-900 dark:hover:text-white"
+      >
+        Architecture
+      </a>
+    </nav>
+  </div>
+  <div class="container-prose mt-6 text-xs text-slate-500 dark:text-slate-500">
+    &copy; {year} Dayseam. Open source under the repo's license.
+  </div>
+</footer>
