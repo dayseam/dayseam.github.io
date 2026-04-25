@@ -1,4 +1,4 @@
-# Third-party attribution — @dayseam/website
+# Third-party attribution — dayseam.github.io
 
 ## Brand marks — Simple Icons (CC0)
 
@@ -24,13 +24,16 @@ endorsement or affiliation.
 | Microsoft Word  | `microsoftword`    | `src/data/connectors.ts` — `WORD_PATH`   |
 | Microsoft Excel | `microsoftexcel`   | `src/data/connectors.ts` — `EXCEL_PATH`  |
 
-The first five (GitHub, GitLab, Jira, Confluence, Git) mirror the paths used
-in-app at `apps/desktop/src/components/ConnectorLogo.tsx`. If Simple Icons
-updates a mark upstream, change BOTH files in the same PR — there is no CI
-gate enforcing the consistency today.
+The first five (GitHub, GitLab, Jira, Confluence, Git) also ship in the
+Dayseam desktop app and are kept in sync by hand; the canonical copy in the
+monorepo is at
+[`apps/desktop/src/components/ConnectorLogo.tsx`](https://github.com/dayseam/dayseam/blob/master/apps/desktop/src/components/ConnectorLogo.tsx).
+If Simple Icons updates a mark upstream, change both files in the same
+monorepo PR — there is no CI gate enforcing the consistency today.
 
 ## Dayseam brand mark — "Convergence"
 
 The Dayseam mark (`public/dayseam-mark.svg`, nav logo, favicon, og:image) is
 © Dayseam and is **not** CC0-licensed. Do not reuse it outside of Dayseam-
-related projects. See `../../docs/brand/README.md` for usage rules.
+related projects. The canonical brand usage guide lives in the monorepo at
+[`docs/brand/README.md`](https://github.com/dayseam/dayseam/blob/master/docs/brand/README.md).
