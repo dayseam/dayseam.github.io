@@ -1,5 +1,16 @@
 name: Deploy to GitHub Pages
 
+# Published at https://dayseam.github.io/.
+#
+# This repo is a deploy mirror of dayseam/dayseam → apps/website/.
+# The monorepo runs the type-check + build + test gates on every PR
+# touching apps/website/**, so by the time a commit lands in this
+# repo's main branch it has already passed check in dayseam/dayseam.
+# We still run `astro check && astro build` here for defence in
+# depth — the mirror job does not guarantee byte-for-byte reproduction
+# of the monorepo's build env (different pnpm store, different Node
+# minor, etc.), so failing fast here is cheaper than an outage.
+
 on:
   push:
     branches: [main]
@@ -13,6 +24,12 @@ permissions:
 concurrency:
   group: pages
   cancel-in-progress: false
+
+env:
+  # Drives Astro's canonical + og:url + sitemap URL generation. Flip
+  # to https://dayseam.com once the apex is pointed at this repo via
+  # a CNAME; the tags update without a code change.
+  SITE_URL: https://dayseam.github.io
 
 jobs:
   build:
@@ -32,10 +49,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Type-check
-        run: pnpm check
-
-      - name: Build
+      - name: Build (astro check + astro build)
         run: pnpm build
 
       - uses: actions/upload-pages-artifact@v3
