@@ -2,14 +2,14 @@ name: Deploy to GitHub Pages
 
 # Published at https://dayseam.github.io/.
 #
-# This repo is a deploy mirror of dayseam/dayseam → apps/website/.
-# The monorepo runs the type-check + build + test gates on every PR
-# touching apps/website/**, so by the time a commit lands in this
-# repo's main branch it has already passed check in dayseam/dayseam.
-# We still run `astro check && astro build` here for defence in
-# depth — the mirror job does not guarantee byte-for-byte reproduction
-# of the monorepo's build env (different pnpm store, different Node
-# minor, etc.), so failing fast here is cheaper than an outage.
+# DAY-171 made this repo the canonical home of the Dayseam
+# marketing site; before that it was described as a deploy mirror
+# of dayseam/dayseam → apps/website/. That monorepo copy has been
+# removed, so `astro check && astro build` below is now the only
+# gate the site passes through end-to-end — there is no upstream
+# typecheck to rely on. The check runs on every push to main and
+# on workflow_dispatch; a failing check blocks the deploy step so
+# a broken build cannot reach Pages.
 
 on:
   push:
