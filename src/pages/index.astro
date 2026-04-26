@@ -40,29 +40,41 @@
 //   `client:only="react"` renders nothing on the server and hydrates
 //   as soon as JS loads — cheapest correct option.
 //
-//   Because the hero island renders nothing server-side, the page's
-//   only <h1> and the product pitch would be missing from the static
-//   HTML. That breaks three things at once:
-//     1. Crawlers / previewers that don't execute JS (rare but real)
-//        see a page with no headline, skipping straight to "Three
-//        steps. No meetings about meetings" (an <h2>).
-//     2. Visitors with JS disabled — or with a failed JS load because
-//        of an ad-blocker / CSP mismatch / network drop between the
-//        HTML and the island bundle — see the same empty hero frame.
-//     3. The document outline becomes h2-only, which is a WCAG 2.4.6
-//        regression on the landing page.
+//   DAY-172 pairs the island with an Astro `slot="fallback"`
+//   component (`HeroFallback`) so the static HTML is not empty
+//   where the hero will eventually live. Before DAY-172 the
+//   server rendered zero bytes for the hero, which caused two
+//   problems:
 //
-//   The <noscript> block below ships a server-rendered h1 + pitch +
-//   three-step summary using the same copy as `HeroStatic`. It's
-//   hidden when JS is running (browsers remove <noscript> contents
-//   from the accessibility tree when scripting is enabled), so the
-//   animated hero remains the primary experience. The static copy
-//   deliberately lives here rather than being extracted into a
-//   separate Astro component because it is only four short blocks
-//   and the one caller is this file — a component would just add
-//   indirection.
+//     1. Layout-shift glitch on every load. HowItWorks ("Three
+//        steps. No meetings about meetings") painted at the top
+//        of the viewport on first paint, then once React
+//        hydrated HeroAnimated added 300vh of scroll zone above
+//        it and shoved HowItWorks down — the page visibly
+//        "snapped back to top" a few hundred ms into every
+//        page load. The fallback mirrors HeroAnimated's outer
+//        dimensions (`relative h-[300vh]` with an inner
+//        `sticky top-0 h-screen`), so on hydration the animated
+//        hero replaces the fallback in place with zero CLS.
+//
+//     2. No server-rendered h1 or pitch. Crawlers / link
+//        previewers / accessibility tools that don't run JS saw
+//        a page whose document outline started at an h2 and
+//        whose first meaningful text was "Three steps",
+//        skipping the product pitch entirely. HeroFallback
+//        carries the same h1 + pitch copy as HeroStatic, so the
+//        static HTML now has the primary headline and the
+//        reading order agrees with what JS-enabled users see.
+//
+//   HeroFallback also subsumes the former `<noscript>` block
+//   that used to live here. An Astro island's fallback slot is
+//   rendered server-side and stays rendered if scripting never
+//   activates, so JS-disabled visitors see the fallback
+//   permanently — same outcome as the old noscript block, one
+//   source of pitch copy instead of two.
 import Base from "../layouts/Base.astro";
 import Hero from "../components/Hero";
+import HeroFallback from "../components/HeroFallback.astro";
 import HowItWorks from "../components/HowItWorks.astro";
 import ConnectorGrid from "../components/ConnectorGrid.astro";
 import TrustStrip from "../components/TrustStrip.astro";
@@ -70,33 +82,9 @@ import DownloadCTA from "../components/DownloadCTA.astro";
 ---
 
 <Base>
-  <noscript>
-    <section
-      class="mx-auto max-w-6xl px-6 py-20"
-      aria-label="How Dayseam works"
-    >
-      <div class="mx-auto max-w-3xl text-center">
-        <h1
-          class="text-balance text-4xl font-semibold leading-tight text-zinc-50 sm:text-5xl"
-        >
-          The report of your day, written from evidence
-        </h1>
-        <p class="mt-4 text-balance text-lg text-zinc-400">
-          Dayseam collects what you actually did across GitHub, GitLab, Jira,
-          Confluence, and your local repos, then stitches it into an editable
-          Markdown report, locally, with no account and no telemetry
-        </p>
-        <p class="mt-6 text-sm text-zinc-500">
-          This page has an interactive hero that needs JavaScript to render.
-          <a href="#how-it-works" class="underline hover:text-zinc-300">
-            Skip to how it works
-          </a>
-          .
-        </p>
-      </div>
-    </section>
-  </noscript>
-  <Hero client:only="react" />
+  <Hero client:only="react">
+    <HeroFallback slot="fallback" />
+  </Hero>
   <HowItWorks />
   <ConnectorGrid />
   <TrustStrip />
