@@ -7,13 +7,20 @@ name: Deploy to GitHub Pages
 # of dayseam/dayseam → apps/website/. That monorepo copy has been
 # removed, so `astro check && astro build` below is now the only
 # gate the site passes through end-to-end — there is no upstream
-# typecheck to rely on. The check runs on every push to main and
+# typecheck to rely on. The check runs on every push to master and
 # on workflow_dispatch; a failing check blocks the deploy step so
 # a broken build cannot reach Pages.
+#
+# DAY-173 renamed the default branch from `main` to `master` so
+# this repo's branch naming matches `dayseam/dayseam`. GitHub's
+# branch-rename endpoint rewrites refs, open PR targets, and
+# branch-protection rules atomically; the only thing it does not
+# touch is the list of branches wired into CI triggers, which is
+# why the `branches:` list below had to be updated by hand.
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   workflow_dispatch:
 
 permissions:

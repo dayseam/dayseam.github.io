@@ -1,10 +1,19 @@
 ---
 // DAY-166. Top-of-page navigation.
 //
-// Three anchors, one CTA. We resist the temptation to ship a full
-// in-site nav (Product / Pricing / Blog / Docs) on day one because
-// there are no separate pages yet and a nav with three in-page
-// anchors reads as confident and focused rather than empty.
+// Three in-page anchors plus a GitHub outbound. We resist the
+// temptation to ship a full in-site nav (Product / Pricing / Blog
+// / Docs) on day one because there are no separate pages yet and
+// a nav with a few in-page anchors reads as confident and focused
+// rather than empty.
+//
+// DAY-173 removed the top-right "Download for macOS" CTA. The
+// page already has a dedicated DownloadCTA section at the bottom
+// with the same "Ready in about a minute" copy and the same
+// `/releases/latest` link, so the top button was a duplicate
+// conversion surface rather than a second funnel. Keeping a single
+// download CTA also lets the nav stay quiet enough to not compete
+// with the hero animation immediately below it.
 import BrandMark from "./BrandMark.astro";
 ---
 
@@ -36,14 +45,5 @@ import BrandMark from "./BrandMark.astro";
         </a>
       </li>
     </ul>
-
-    <a
-      href="https://github.com/dayseam/dayseam/releases/latest"
-      class="inline-flex items-center gap-2 rounded-md border border-cream/20 bg-cream/10 px-4 py-1.5 text-sm font-medium text-cream transition-colors hover:bg-cream/20 focus-visible:bg-cream/20"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Download for macOS
-    </a>
   </nav>
 </header>

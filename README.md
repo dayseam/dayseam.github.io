@@ -33,16 +33,20 @@ to be synced across repos on every edit.
 1. Engineer opens a PR against `dayseam/dayseam.github.io`
    touching any of `src/`, `public/`, `astro.config.mjs`,
    `tailwind.config.mjs`, `package.json`, etc.
-2. PR merges to `main`.
+2. PR merges to `master`.
 3. [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)
    runs `astro check && astro build`, uploads the artifact, and
    deploys it to GitHub Pages via `actions/deploy-pages@v4`.
 4. Site is live at `https://dayseam.github.io/` within a few
    minutes.
 
-Pages is configured to deploy from `main` via GitHub Actions
+Pages is configured to deploy from `master` via GitHub Actions
 (`build_type: workflow`), so `deploy.yml` is the single
 authoritative deployment surface. No branch-based Pages fallback.
+DAY-173 renamed the default branch from `main` to `master` to
+match `dayseam/dayseam`; the rename was done through GitHub's
+branch-rename endpoint, which updated open-PR targets and
+branch-protection rules in the same call.
 
 ## Local development
 
