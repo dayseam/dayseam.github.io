@@ -80,6 +80,44 @@
 //   (same h1, same pitch sentence, same "Scroll to see how"
 //   tracker), which makes hydration a silent DOM swap.
 //
+//   DAY-174 closed the final flash users were still seeing.
+//   The two previous fixes matched dimensions and text across
+//   the *pre-hydration* fallback and the *post-hydration*
+//   React island, but they did not address the gap *during*
+//   hydration. Astro's `client:only` runtime removes the
+//   fallback subtree before it mounts the React component;
+//   because `astro-island` inherits Astro's default
+//   `display: contents`, an astro-island with no children
+//   contributes zero block-flow height. And HeroAnimated's
+//   first render is not cheap — 60 deterministic starfield
+//   spans, five FallingIcon motion-value pipelines (each
+//   wiring nine useTransforms to the same scrollYProgress),
+//   the five-layer BlackHole, IntroHero and Captions, plus
+//   framer-motion's own subscriber setup. On a cold load
+//   that's tens of milliseconds where the island is empty,
+//   the document shrinks by 300vh, HowItWorks springs up to
+//   the top of the viewport, React finishes mounting, and
+//   HowItWorks gets shoved back down a frame or two later.
+//   That's the "I see 'Three steps' first, then the page
+//   jumps to the top" report — identical visual symptom to
+//   the pre-DAY-172 CLS, different underlying cause.
+//
+//   The fix is a wrapper `<div class="min-h-[300vh]">` around
+//   the island. The wrapper is a plain block element so it is
+//   not affected by Astro's `display: contents` rule on
+//   `astro-island`, and its Tailwind-emitted `min-height: 300vh`
+//   reserves the scroll zone independently of what the island
+//   currently contains. When the fallback is present, the
+//   fallback's own `h-[300vh]` fills the wrapper exactly; during
+//   the hydration gap the island is empty but the wrapper's
+//   min-height holds the shape; once React renders, HeroAnimated's
+//   `h-[300vh]` section fills the wrapper again — in every one
+//   of those three states, the document's block-flow budget for
+//   this component is constant at 300vh. Wrapping instead of
+//   styling `astro-island` directly avoids overriding Astro's
+//   global `display: contents` contract, which other islands
+//   elsewhere on the site might rely on.
+//
 //   HeroFallback also subsumes the former `<noscript>` block
 //   that used to live here. An Astro island's fallback slot is
 //   rendered server-side and stays rendered if scripting never
@@ -96,9 +134,11 @@ import DownloadCTA from "../components/DownloadCTA.astro";
 ---
 
 <Base>
-  <Hero client:only="react">
-    <HeroFallback slot="fallback" />
-  </Hero>
+  <div class="min-h-[300vh]">
+    <Hero client:only="react">
+      <HeroFallback slot="fallback" />
+    </Hero>
+  </div>
   <HowItWorks />
   <ConnectorGrid />
   <TrustStrip />
