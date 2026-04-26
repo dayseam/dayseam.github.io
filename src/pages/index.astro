@@ -61,10 +61,24 @@
 //        previewers / accessibility tools that don't run JS saw
 //        a page whose document outline started at an h2 and
 //        whose first meaningful text was "Three steps",
-//        skipping the product pitch entirely. HeroFallback
-//        carries the same h1 + pitch copy as HeroStatic, so the
-//        static HTML now has the primary headline and the
-//        reading order agrees with what JS-enabled users see.
+//        skipping the product pitch entirely. HeroFallback now
+//        carries a server-rendered h1 ("Dayseam") plus the
+//        product pitch line, so the static HTML leads with the
+//        product and the reading order agrees with what
+//        JS-enabled users see.
+//
+//   DAY-173 followed up with a subtler fix. Container height
+//   matching alone removed the scroll-zone jump, but the
+//   *visible text* still flipped on hydration: the fallback
+//   originally used HeroStatic's long h1 ("The report of your
+//   day, written from evidence"), while the hydrated animated
+//   hero paints `IntroHero` at scroll = 0 with a shorter
+//   "Dayseam" branded h1. So first-paint viewers saw the long
+//   pitch, then it swapped to the short branded card — a
+//   perceptible blink on every load even though geometry stayed
+//   put. HeroFallback now mirrors IntroHero's copy exactly
+//   (same h1, same pitch sentence, same "Scroll to see how"
+//   tracker), which makes hydration a silent DOM swap.
 //
 //   HeroFallback also subsumes the former `<noscript>` block
 //   that used to live here. An Astro island's fallback slot is

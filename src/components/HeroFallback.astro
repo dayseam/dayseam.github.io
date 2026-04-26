@@ -1,53 +1,68 @@
 ---
-// DAY-172. Server-rendered placeholder for the `<Hero client:only>`
-// island.
+// DAY-172 / DAY-173. Server-rendered placeholder for the
+// `<Hero client:only>` island.
 //
 // The hero is a React island with `client:only="react"` because
 // framer-motion's scroll hooks (`useScroll`, `MotionValue`) ship
 // browser-only code that breaks Astro's static build. `client:only`
-// renders nothing on the server, which up to DAY-171 meant the
-// static HTML looked like this on first paint:
+// renders nothing on the server by default, which up to DAY-171
+// meant the static HTML looked like this on first paint:
 //
 //     (empty astro-island)
 //     <section id="how-it-works">Three steps. No meetings…</section>
 //     …
 //
-// So browsers painted the "How it works" section at the top of
-// the viewport, then — a few hundred ms later, when the React
-// bundle finished loading — `HeroAnimated` mounted with a
-// `h-[300vh]` scroll zone above HowItWorks and shoved everything
-// downward. Scroll position stayed at 0, so from the user's
-// perspective the page snapped back to the top and the hero
-// appeared where HowItWorks had just been. Classic CLS glitch.
+// So browsers painted the "How it works" section at the top of the
+// viewport, then — a few hundred ms later, when the React bundle
+// finished loading — `HeroAnimated` mounted with a `h-[300vh]`
+// scroll zone above HowItWorks and shoved everything downward.
+// Scroll position stayed at 0, so from the user's perspective the
+// page snapped back to the top and the hero appeared where
+// HowItWorks had just been. Classic CLS glitch.
 //
-// This component solves that by being the `slot="fallback"` for
-// the hero island. It mirrors HeroAnimated's outer structure —
-// `relative h-[300vh]` outer, `sticky top-0 h-screen` inner —
-// so the scroll zone is reserved server-side with the same
-// dimensions the hydrated animated hero will use. When React
-// hydrates HeroAnimated, it replaces this fallback inside the
-// astro-island with zero layout shift (same outer height). When
-// React hydrates HeroStatic instead (reduced-motion users), the
-// container collapses from 300vh to HeroStatic's auto height,
-// which is a shift, but (a) reduced-motion users have explicitly
-// opted out of motion anyway, and (b) the shift happens once at
-// hydration with scroll at 0, so it reads as "the static variant
-// loaded" rather than as a mid-read page jump.
+// DAY-172 added this file as the `slot="fallback"` for the hero
+// island, mirroring HeroAnimated's outer structure
+// (`relative h-[300vh]` outer, `sticky top-0 h-screen` inner) so
+// the scroll zone is reserved server-side with the exact
+// dimensions the hydrated animated hero will use. That fixed the
+// 300vh jump.
 //
-// As a bonus, the fallback IS the page content for JS-disabled
-// visitors — browsers that render astro-island contents as
-// static HTML when scripting is off — which means the separate
-// `<noscript>` block previously in index.astro is now redundant
-// and was removed in DAY-172 alongside this new component.
+// DAY-173 closed the remaining residual flicker: the fallback
+// originally carried HeroStatic's copy ("The report of your day,
+// written from evidence" + long pitch paragraph), which only
+// reduced-motion users ever see once the React island hydrates.
+// For the 99%+ of visitors whose JS is enabled and motion is not
+// reduced, the React island hydrates to `HeroAnimated`, which
+// paints `IntroHero` at scroll = 0 — copy is "Dayseam" + "Automatic
+// daily reports, pulled from every tool you already ship in" +
+// "Scroll to see how". So even though the container height didn't
+// shift on hydration, the visible TEXT content flipped from the
+// HeroStatic-flavoured h1 to the IntroHero one, which read as a
+// glitch on first load.
 //
-// Design scope: this fallback is a single Convergence-branded
-// pitch card, sticky-centred in the viewport, with the same h1
-// + pitch copy as HeroStatic. It deliberately does not attempt
-// to reproduce the black-hole backdrop or the icon rain — that
-// is the point of the animation, and reproducing it statically
-// would be both effort-intensive and misleading about what the
-// hydrated experience looks like.
-import BrandMark from "./BrandMark.astro";
+// This file now mirrors IntroHero's copy exactly so hydration is
+// visually silent: same h1 ("Dayseam"), same pitch line, same
+// scroll affordance, same sticky-centred layout inside the same
+// 300vh container. The React hero replaces the DOM subtree on
+// hydration but the *rendered result* is pixel-close, so the
+// hand-off is imperceptible.
+//
+// Reduced-motion users (served `HeroStatic` after hydration) still
+// see a content change — from this fallback's "Dayseam" pitch into
+// HeroStatic's three-step layout — but reduced-motion paths
+// opt out of motion anyway, and the replacement happens once at
+// scroll 0 in the same visual band, which reads as "the static
+// variant loaded" rather than mid-read page shift.
+//
+// SEO / no-JS footnote: search crawlers and JS-disabled visitors
+// that don't execute the React island see this fallback as the
+// page content. The h1 is "Dayseam" (brand term) and the pitch
+// line carries the product positioning; the richer product copy
+// lives downstream in HowItWorks, ConnectorGrid, TrustStrip, and
+// DownloadCTA, which all render as static Astro components and
+// remain reachable without JS. The standalone `<noscript>` block
+// that lived in index.astro pre-DAY-172 is therefore still
+// retired — this fallback does the same job.
 ---
 
 <section
@@ -55,7 +70,7 @@ import BrandMark from "./BrandMark.astro";
   aria-label="How Dayseam works, loading an animated walkthrough"
 >
   <div
-    class="sticky top-0 flex h-screen items-center justify-center overflow-hidden"
+    class="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden px-6 text-center"
   >
     <div
       aria-hidden="true"
@@ -64,26 +79,21 @@ import BrandMark from "./BrandMark.astro";
     >
     </div>
 
-    <div class="relative z-10 mx-auto max-w-3xl px-6 text-center">
-      <div class="mb-8 flex items-center justify-center">
-        <BrandMark size={72} />
-      </div>
-      <h1
-        class="text-balance text-4xl font-semibold leading-tight text-zinc-50 sm:text-5xl"
-      >
-        The report of your day, written from evidence
-      </h1>
-      <p class="mt-5 text-balance text-lg text-zinc-400">
-        Dayseam collects what you actually did across GitHub, GitLab, Jira,
-        Confluence, and your local repos, then stitches it into an editable
-        Markdown report, locally, with no account and no telemetry
-      </p>
-      <p
-        class="mt-8 text-xs uppercase tracking-[0.22em] text-zinc-500"
-        aria-hidden="true"
-      >
-        Scroll to see how
-      </p>
-    </div>
+    <h1
+      class="relative z-10 text-balance text-5xl font-semibold tracking-tight text-zinc-50 sm:text-7xl"
+    >
+      Dayseam
+    </h1>
+    <p
+      class="relative z-10 mt-4 max-w-xl text-balance text-base text-zinc-300 sm:mt-5 sm:text-lg"
+    >
+      Automatic daily reports, pulled from every tool you already ship in
+    </p>
+    <p
+      class="relative z-10 mt-6 text-xs uppercase tracking-[0.28em] text-zinc-500 sm:mt-8"
+      aria-hidden="true"
+    >
+      Scroll to see how
+    </p>
   </div>
 </section>
