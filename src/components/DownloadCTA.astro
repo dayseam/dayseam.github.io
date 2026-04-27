@@ -1,11 +1,33 @@
 ---
-// DAY-166. The single conversion CTA.
+// DAY-166 / DAY-206. The single conversion CTA.
 //
-// We link to `/releases/latest` rather than pinning a specific
-// version in the href so the site never gets caught advertising a
-// version that was superseded three releases ago. The GitHub redirect
-// resolves to whatever the most recent *published* release is — which,
-// since DAY-164, is guaranteed to be a descendant of master.
+// The href points at GitHub's
+// `/releases/latest/download/Dayseam.dmg` redirect: a stable,
+// version-agnostic URL that 302s to whatever the most recent
+// release's `Dayseam.dmg` asset is. The release workflow at
+// `dayseam/dayseam` (`.github/workflows/release.yml`, DAY-206)
+// uploads `Dayseam.dmg` as an alias next to the versioned
+// `Dayseam-v${VERSION}.dmg` on every release, so this URL never
+// goes stale. The browser reads `Content-Disposition: attachment`
+// off the redirected response and starts the download immediately
+// — the user no longer has to land on the GitHub release page and
+// hunt for the right asset, which was the previous behaviour and
+// the single biggest friction point in the install flow.
+//
+// We avoid:
+//   - hardcoding `Dayseam-v${VERSION}.dmg` (404s the moment a new
+//     release publishes — GitHub's redirect needs a byte-exact
+//     filename, no globs);
+//   - resolving the asset URL client-side via `api.github.com`
+//     (adds JS to a static Astro page and hits the
+//     60-req/hr-per-IP unauthenticated rate limit on shared
+//     corporate NAT egresses).
+//
+// The "View source on GitHub" link below stays unchanged — users
+// who want the changelog or want to inspect the binary still have
+// a one-click path to the repo from this section. Anyone landing
+// here from the keyboard with download-blocked browsers can also
+// follow that link to the release page manually.
 ---
 
 <section
@@ -24,9 +46,8 @@
 
     <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
       <a
-        href="https://github.com/dayseam/dayseam/releases/latest"
+        href="https://github.com/dayseam/dayseam/releases/latest/download/Dayseam.dmg"
         class="inline-flex items-center gap-2 rounded-lg bg-cream px-6 py-3 text-sm font-semibold text-charcoal-900 transition-transform hover:scale-[1.02] focus-visible:scale-[1.02]"
-        target="_blank"
         rel="noopener noreferrer"
       >
         Download for macOS
