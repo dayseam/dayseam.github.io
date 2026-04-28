@@ -16,7 +16,12 @@ import { ReportMock } from "./ReportMock";
  *
  *   Act 1  (scroll 0.00 → 0.35): work-evidence icons rain down
  *          from the top. Staggered, varied rotation, deliberately
- *          chaotic. This is "your day, scattered across ten tools".
+ *          chaotic. This is "your day, scattered across all your
+ *          tools" (the captioned line below). The literal count of
+ *          falling icons is `ALL_CONNECTORS.length` (six shipping
+ *          + five coming-soon at time of writing); the caption is
+ *          intentionally count-free so it doesn't drift the moment
+ *          a connector is promoted from coming-soon to shipping.
  *
  *   Act 2  (scroll 0.25 → 0.65): a singularity forms at mid-frame.
  *          An accretion disk of the five strand colours swirls
@@ -593,7 +598,10 @@ function IntroHero({ scrollYProgress }: IntroHeroProps): JSX.Element {
       <p className="mt-4 max-w-xl text-balance text-base text-zinc-300 sm:mt-5 sm:text-lg">
         Automatic daily reports, pulled from every tool you already ship in
       </p>
-      <p className="mt-6 text-xs uppercase tracking-[0.28em] text-zinc-500 sm:mt-8">
+      <p
+        className="mt-6 text-xs uppercase tracking-[0.28em] text-zinc-500 sm:mt-8"
+        aria-hidden="true"
+      >
         Scroll to see how
       </p>
     </motion.div>
@@ -655,7 +663,7 @@ function Captions({ scrollYProgress }: CaptionsProps): JSX.Element {
   // caption is in flow or absolutely positioned.
   //
   // `data-caption` lets the caption-alignment Playwright smoke
-  // test (`apps/website/tests/caption-alignment.spec.mjs`) query
+  // test (`tests/caption-alignment.spec.mjs`) query
   // all three lines and assert their rendered `top` values
   // collapse to a single value — the regression guard for this
   // file's history of absolute-positioning pitfalls.
@@ -666,7 +674,7 @@ function Captions({ scrollYProgress }: CaptionsProps): JSX.Element {
         className="px-6 text-balance text-xl font-medium text-zinc-100 sm:text-2xl"
         style={{ opacity: act1Opacity }}
       >
-        Your day is <span className="text-strand-coral">scattered</span> across ten tools
+        Your day is <span className="text-strand-coral">scattered</span> across all your tools
       </motion.p>
       <motion.p
         data-caption="act2"
@@ -817,8 +825,8 @@ function HeroStatic(): JSX.Element {
         </h1>
         <p className="mt-4 text-balance text-lg text-zinc-400">
           Dayseam collects what you actually did across GitHub, GitLab, Jira,
-          Confluence, and your local repos, then stitches it into an editable
-          Markdown report, locally, with no account and no telemetry
+          Confluence, Outlook, and your local repos, then stitches it into an
+          editable Markdown report, locally, with no account and no telemetry
         </p>
       </div>
 
@@ -831,8 +839,9 @@ function HeroStatic(): JSX.Element {
             Your day is scattered
           </h2>
           <p className="text-sm leading-relaxed text-zinc-400">
-            Commits here, tickets there, docs somewhere else. Nobody has time to
-            grep five tools every evening to write a standup
+            Commits here, tickets there, docs somewhere else, an inbox you
+            haven't read. Nobody has time to grep six tools every evening to
+            write a standup
           </p>
           <div className="mt-5 flex flex-wrap gap-2">
             {ALL_CONNECTORS.map((c) => (

@@ -76,14 +76,18 @@ pnpm preview
   get a static equivalent; the branch lives in
   `src/components/Hero.tsx`.
 
-No analytics, no CMS, no backend. The site ships as static HTML + CSS
-plus one JS bundle for the hero.
+No CMS, no backend. The site ships as static HTML + CSS plus one JS
+bundle for the hero. Lightweight, consent-gated analytics (Microsoft
+Clarity + Google Analytics 4 + Google Search Console) are documented
+in [`docs/analytics.md`](./docs/analytics.md) — they live behind an
+explicit cookie banner and are scoped to the marketing site only,
+not the desktop app.
 
 ## Cross-repo contract with the desktop app
 
-The five currently-shipping connector brand marks (GitHub, GitLab,
-Jira, Confluence, Git) and their per-theme accent hexes are
-duplicated between this repo's
+The six currently-shipping connector brand marks (GitHub, GitLab,
+Jira, Confluence, Git, Outlook) and their per-theme accent hexes
+are duplicated between this repo's
 [`src/data/connectors.ts`](./src/data/connectors.ts) and the
 desktop app's
 [`apps/desktop/src/components/ConnectorLogo.tsx`](https://github.com/dayseam/dayseam/blob/master/apps/desktop/src/components/ConnectorLogo.tsx).

@@ -46,10 +46,20 @@
  *
  * ## How to run
  *
- *   # from the monorepo root
- *   pnpm --filter @dayseam/website build
- *   pnpm --filter @dayseam/website preview &
- *   node apps/website/tests/caption-alignment.spec.mjs
+ *   # from this repo's root (dayseam.github.io)
+ *   pnpm install
+ *   pnpm exec playwright install chromium  # one-time, browser binary
+ *   pnpm build
+ *   pnpm preview &                         # serves ./dist on :4321
+ *   pnpm test:caption-alignment            # runs this script
+ *
+ * The harness reads the preview URL from `WEBSITE_URL` if set, and
+ * falls back to `http://localhost:4321` (the default `pnpm preview`
+ * port). Override the env var to point at a deployed preview if you
+ * want to defend the invariant against the served HTML rather than
+ * a local build:
+ *
+ *   WEBSITE_URL=https://dayseam.github.io pnpm test:caption-alignment
  *
  * Exit code 0 means every caption is aligned on every viewport.
  * Any non-zero exit means a caption drifted; the failing message

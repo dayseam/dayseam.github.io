@@ -9,8 +9,11 @@
 //                         home dir; see docs/privacy-security.md §1.
 //   - No account       → there is literally no login screen, the
 //                         app never talks to a Dayseam server.
-//   - Keychain tokens  → crates/dayseam-secrets keys PATs by
-//                         `service::account`; never on disk.
+//   - Keychain tokens  → crates/dayseam-secrets keys credentials
+//                         (PATs and OAuth tokens, including
+//                         Outlook's refresh token added in
+//                         DAY-210) by `service::account`; never
+//                         on disk.
 //   - No telemetry     → the desktop CSP denies any host not named
 //                         in the user's own source configs.
 //
@@ -57,8 +60,8 @@
         Keychain tokens
       </p>
       <p class="mt-2 text-sm text-zinc-300">
-        GitHub / GitLab / Jira / Confluence PATs live in your macOS Keychain,
-        never in plaintext on disk
+        Connector credentials — PATs and OAuth refresh tokens — live in your
+        macOS Keychain, never in plaintext on disk
       </p>
     </div>
 

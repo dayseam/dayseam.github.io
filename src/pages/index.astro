@@ -13,8 +13,15 @@
 //                       gets it here without leaving the page.
 //
 //   3. Connector grid — concrete. Shows exactly what plugs in today
-//                       (five) and what's on deck (five), by name,
-//                       with each tool's own brand colour + mark.
+//                       (six, after Outlook landed in DAY-210) and
+//                       what's on deck (five), by name, with each
+//                       tool's own brand colour + mark. The exact
+//                       counts are intentionally kept here in the
+//                       comment rather than the rendered copy so
+//                       that promoting a coming-soon connector to
+//                       shipping is a one-file change in
+//                       src/data/connectors.ts plus a comment
+//                       refresh here.
 //
 //   4. Trust strip    — preempts the four things a local-first app's
 //                       audience always asks ("where is my data?
@@ -90,10 +97,12 @@
 //   `display: contents`, an astro-island with no children
 //   contributes zero block-flow height. And HeroAnimated's
 //   first render is not cheap — 60 deterministic starfield
-//   spans, five FallingIcon motion-value pipelines (each
-//   wiring nine useTransforms to the same scrollYProgress),
-//   the five-layer BlackHole, IntroHero and Captions, plus
-//   framer-motion's own subscriber setup. On a cold load
+//   spans, one FallingIcon motion-value pipeline per entry
+//   in `ALL_CONNECTORS` (each wiring nine useTransforms to
+//   the same scrollYProgress; eleven entries today, six
+//   shipping plus five coming-soon), the five-layer
+//   BlackHole, IntroHero and Captions, plus framer-motion's
+//   own subscriber setup. On a cold load
 //   that's tens of milliseconds where the island is empty,
 //   the document shrinks by 300vh, HowItWorks springs up to
 //   the top of the viewport, React finishes mounting, and
