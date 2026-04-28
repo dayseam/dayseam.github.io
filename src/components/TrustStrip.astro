@@ -1,5 +1,6 @@
 ---
-// DAY-166. The trust strip — four facts, no marketing fluff.
+// DAY-166 / DAY-207. The trust strip — four facts, no marketing
+// fluff.
 //
 // Each bullet corresponds to a specific claim the product actually
 // backs up in code, referenced in docs/privacy-security.md:
@@ -13,10 +14,18 @@
 //   - No telemetry     → the desktop CSP denies any host not named
 //                         in the user's own source configs.
 //
-// If any of these four stop being true, this file is where a
-// marketing-facing regression becomes visible — the canonical
-// disclosure page is docs/privacy-security.md, which must be kept
-// in sync.
+// All four claims are scoped to **the desktop app**. That scoping
+// matters as of DAY-207, which added GA4 + Microsoft Clarity (both
+// consent-gated) to *this marketing site*. The "Zero telemetry"
+// bullet's body copy is deliberately worded "Dayseam only makes
+// outbound requests to the hosts you configure. Enforced by the
+// desktop CSP" — the qualifier "the desktop CSP" is what
+// distinguishes the app's hard guarantee from the website's
+// consent-gated analytics. If the body copy ever drifts to drop
+// "desktop" without also removing the marketing-site analytics,
+// that's a brand-promise regression and this file is where it
+// becomes visible. The canonical disclosure page is
+// docs/privacy-security.md, which must be kept in sync.
 ---
 
 <section

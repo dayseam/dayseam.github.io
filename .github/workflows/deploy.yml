@@ -38,6 +38,34 @@ env:
   # a CNAME; the tags update without a code change.
   SITE_URL: https://dayseam.github.io
 
+  # DAY-207. GA4 + Microsoft Clarity + Google Search Console
+  # threading. All three are sourced from repository secrets so
+  # the live site picks them up at build time without anyone
+  # needing to commit a tracker ID into source. On forks, on
+  # feature-branch preview builds, and in `astro dev` without an
+  # `.env` file, these env vars resolve to empty — `Analytics.astro`
+  # detects that and renders zero markup, the consent banner still
+  # appears (so the flow is testable end-to-end without an account
+  # at either vendor), and the site never contacts a third-party
+  # origin. Production builds with secrets configured produce the
+  # full instrumented page.
+  #
+  # To configure: in the dayseam/dayseam.github.io repo settings →
+  # Secrets and variables → Actions → New repository secret.
+  #
+  # Required-ish (any subset works, all three optional):
+  #   PUBLIC_GA_MEASUREMENT_ID    `G-XXXXXXXXXX` from analytics.google.com
+  #   PUBLIC_CLARITY_PROJECT_ID   alphanumeric project id from clarity.microsoft.com
+  #   PUBLIC_GSC_VERIFICATION     value from search.google.com/search-console
+  #                                "verification" → "HTML tag" → content="..."
+  #
+  # The `PUBLIC_` prefix is required by Astro's env-var contract:
+  # without it, `import.meta.env.<NAME>` resolves to undefined in
+  # the client bundle. See https://docs.astro.build/en/guides/environment-variables/.
+  PUBLIC_GA_MEASUREMENT_ID: ${{ secrets.PUBLIC_GA_MEASUREMENT_ID }}
+  PUBLIC_CLARITY_PROJECT_ID: ${{ secrets.PUBLIC_CLARITY_PROJECT_ID }}
+  PUBLIC_GSC_VERIFICATION: ${{ secrets.PUBLIC_GSC_VERIFICATION }}
+
 jobs:
   build:
     runs-on: ubuntu-latest

@@ -1,9 +1,10 @@
 // @ts-check
 import { defineConfig } from "astro/config";
 import react from "@astrojs/react";
+import sitemap from "@astrojs/sitemap";
 import tailwind from "@astrojs/tailwind";
 
-// DAY-166 / DAY-169. Marketing site for Dayseam.
+// DAY-166 / DAY-169 / DAY-207. Marketing site for Dayseam.
 //
 // Output: static. The site has no backend, no user accounts, no
 // database — the whole point of Dayseam is that the product itself
@@ -45,6 +46,24 @@ export default defineConfig({
       // Tailwind's base without the integration injecting a
       // competing `base.css`.
       applyBaseStyles: false,
+    }),
+    // DAY-207. Auto-emit /sitemap-index.xml + /sitemap-0.xml at build
+    // time. The integration walks every route Astro knows about
+    // (`src/pages/**/*.astro` plus dynamic `getStaticPaths`) and
+    // generates an XML index + per-batch sitemap with the canonical
+    // URL derived from `site` above. We only have one route today
+    // (`/`); when DAY-208 lands the per-integration landing pages
+    // (`/integrations/<tool>`) the sitemap auto-includes them with
+    // zero config changes — that's the whole point of generating it
+    // from routes instead of hand-maintaining a list. `lastmod` falls
+    // back to the build timestamp, which is the correct signal for a
+    // static site that rebuilds per release.
+    sitemap({
+      // Hint to Google's prioritisation. Defaults are fine for a
+      // single-page site, but once integration landing pages exist
+      // we want the home page weighted slightly higher.
+      changefreq: "weekly",
+      priority: 0.8,
     }),
   ],
   vite: {

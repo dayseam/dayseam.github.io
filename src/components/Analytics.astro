@@ -1,0 +1,134 @@
+---
+// DAY-207. Privacy-aware loader for Google Analytics 4 and
+// Microsoft Clarity.
+//
+// Why both
+//
+//   GA4 answers "how many people, from where, doing what" —
+//   pageviews, sources, devices, conversions, retention. It is
+//   the lingua franca of marketing-site measurement and the
+//   thing every dashboard tool integrates with.
+//
+//   Clarity answers "what are users *feeling*" — heatmaps, scroll
+//   maps, session replays, dead-click and rage-click detection.
+//   It catches the qualitative things GA4 is structurally bad at:
+//   "users hover the download button but don't click", "everyone
+//   stops scrolling at the connector grid", "the trust strip is
+//   never read". Free, unlimited, no PII captured by default.
+//
+//   The two are complements, not duplicates. Adding both costs
+//   the same as adding either (one consent banner gates both).
+//
+// Why gated by consent
+//
+//   Both products set first-party cookies and (for GA4) ship a
+//   client identifier. UK ICO + EU EDPB guidance is unambiguous:
+//   non-essential cookies require prior, informed, freely-given
+//   consent. The consent banner in `CookieConsent.astro` collects
+//   that signal and persists it in localStorage; this component
+//   does *nothing* until it sees the signal.
+//
+//   That posture is also why we don't run GA4 in "consent mode v2
+//   without consent" (where pings still fire but are anonymised).
+//   The site has no commercial pressure to collect deniers'
+//   pageviews; respecting "decline" cleanly is cheaper, more
+//   honest, and aligns with the rest of the product.
+//
+// Why no-op when env vars are missing
+//
+//   `PUBLIC_GA_MEASUREMENT_ID` and `PUBLIC_CLARITY_PROJECT_ID` are
+//   threaded through `deploy.yml` from GitHub repository secrets.
+//   On a fork, a feature-branch preview, or a local `astro dev`
+//   without `.env`, those vars are empty — and that's fine. The
+//   component renders zero markup in that case, the consent
+//   banner still appears (so the *flow* is testable in dev), and
+//   no third-party origin is contacted. Production gets analytics;
+//   contributors don't have to provision IDs to run the site.
+//
+// Why server-side interpolation, not a dynamic import
+//
+//   We could lazy-import the analytics shim only when consent is
+//   granted, but the runtime cost we'd save is nil — the script
+//   tags here are inert until `dayseamLoadAnalytics()` is called.
+//   Server-side interpolation gives us a single, statically-
+//   greppable script the deploy build can audit in the rendered
+//   HTML, which is the desired property for a tracker.
+
+interface Props {
+  gaMeasurementId?: string;
+  clarityProjectId?: string;
+}
+
+const {
+  gaMeasurementId = import.meta.env.PUBLIC_GA_MEASUREMENT_ID ?? "",
+  clarityProjectId = import.meta.env.PUBLIC_CLARITY_PROJECT_ID ?? "",
+} = Astro.props;
+
+// Defensive ID validation. Astro's `define:vars` will interpolate
+// whatever string we hand it into the inline script verbatim, so
+// a typo'd env var like `PUBLIC_GA_MEASUREMENT_ID="<script>..."`
+// would land directly in the rendered HTML. Both vendor IDs have
+// constrained shapes (GA4: `G-` + 10 alphanumerics; Clarity: 10
+// lowercase alphanumerics) so any string outside those shapes is
+// rejected at render time. Failing closed is better than failing
+// open for code that runs in every visitor's browser.
+const GA_ID_PATTERN = /^G-[A-Z0-9]{8,12}$/;
+const CLARITY_ID_PATTERN = /^[a-z0-9]{6,16}$/;
+
+const gaId = GA_ID_PATTERN.test(gaMeasurementId) ? gaMeasurementId : "";
+const clarityId = CLARITY_ID_PATTERN.test(clarityProjectId) ? clarityProjectId : "";
+
+const enabled = gaId !== "" || clarityId !== "";
+---
+
+{
+  enabled && (
+    <script is:inline define:vars={{ gaId, clarityId }}>
+      {`
+      (function () {
+        var STORAGE_KEY = "dayseam-cookie-consent-v1";
+        var loaded = false;
+
+        function loadAnalytics() {
+          if (loaded) return;
+          loaded = true;
+
+          if (gaId) {
+            var gaScript = document.createElement("script");
+            gaScript.async = true;
+            gaScript.src = "https://www.googletagmanager.com/gtag/js?id=" + gaId;
+            document.head.appendChild(gaScript);
+
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = function () { window.dataLayer.push(arguments); };
+            window.gtag("js", new Date());
+            window.gtag("config", gaId, {
+              anonymize_ip: true,
+              transport_type: "beacon",
+            });
+          }
+
+          if (clarityId) {
+            (function (c, l, a, r, i, t, y) {
+              c[a] = c[a] || function () { (c[a].q = c[a].q || []).push(arguments); };
+              t = l.createElement(r);
+              t.async = 1;
+              t.src = "https://www.clarity.ms/tag/" + i;
+              y = l.getElementsByTagName(r)[0];
+              y.parentNode.insertBefore(t, y);
+            })(window, document, "clarity", "script", clarityId);
+          }
+        }
+
+        try {
+          if (window.localStorage && window.localStorage.getItem(STORAGE_KEY) === "accepted") {
+            loadAnalytics();
+          }
+        } catch (_) { /* localStorage blocked / private mode */ }
+
+        window.addEventListener("dayseam:consent-granted", loadAnalytics);
+      })();
+    `}
+    </script>
+  )
+}

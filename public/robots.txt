@@ -1,0 +1,24 @@
+# DAY-207. Robots policy for https://dayseam.github.io.
+#
+# Posture is "fully indexable, no crawl-rate hints". The site is a
+# few static pages; there is no high-cost surface that would benefit
+# from rate-limiting Googlebot, no auth-walled directory that needs
+# disallowing, and no staging assets shipped to /public. Everything
+# under the docroot is intended to be indexed.
+#
+# The Sitemap directive points crawlers at the auto-generated
+# sitemap-index that @astrojs/sitemap emits on each build. Linking
+# the sitemap from robots.txt is the canonical way to advertise it
+# to crawlers that don't have it pre-registered in Search Console
+# (Bing, Yandex, Brave Search, etc.). Google itself can pick it up
+# either via this file or via the explicit submission in Search
+# Console — both are belt-and-braces, neither hurts.
+#
+# When the apex moves to https://dayseam.com, flip both the host
+# in the Sitemap URL and the SITE_URL in deploy.yml; the rest of
+# the file stays valid.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://dayseam.github.io/sitemap-index.xml

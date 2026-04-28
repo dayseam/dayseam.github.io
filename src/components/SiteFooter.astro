@@ -1,12 +1,20 @@
 ---
-// DAY-166. Minimal footer. A product-focused open-source project
-// does not need a shop / careers / investor-relations stack here.
+// DAY-166 / DAY-207. Minimal footer. A product-focused open-source
+// project does not need a shop / careers / investor-relations stack
+// here.
 //
 // `new Date().getFullYear()` resolves at build time (static Astro
 // output), which is correct for this site because every release
 // triggers a rebuild. Hardcoding the year would drift; resolving
 // at runtime would require JS or an edge function. Build-time is
 // the right trade-off for a rebuild-on-release site.
+//
+// DAY-207: the "Cookie preferences" link uses the magic href
+// `#cookie-preferences` that `CookieConsent.astro`'s inline script
+// listens for — clicking it clears the persisted consent choice
+// and re-shows the banner so a user can change their mind. The
+// hash-only target means the link works without JavaScript routing
+// and is safe to put on any page that mounts the consent banner.
 const year = new Date().getFullYear();
 ---
 
@@ -41,6 +49,13 @@ const year = new Date().getFullYear();
           target="_blank"
           rel="noopener noreferrer"
           >Releases</a
+        >
+      </li>
+      <li>
+        <a
+          href="#cookie-preferences"
+          class="hover:text-zinc-200 focus-visible:text-zinc-200"
+          >Cookie preferences</a
         >
       </li>
     </ul>

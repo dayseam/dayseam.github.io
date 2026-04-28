@@ -1,0 +1,197 @@
+---
+// DAY-207. Cookie consent banner for GA4 + Clarity.
+//
+// Design constraints
+//
+//   - Default state is *no analytics loaded*. Analytics never run
+//     before consent — UK ICO + EU EDPB guidance, and the same
+//     posture as the rest of the product.
+//
+//   - Two buttons, equal visual weight. Pre-selecting "Accept" by
+//     making it visually dominant (a saturated brand-coloured
+//     button next to a dim ghost "Decline") is non-compliant
+//     under recent EDPB enforcement guidance. Both options must
+//     be a single click and equally reachable.
+//
+//   - Decline is sticky. A user who declines today shouldn't see
+//     this banner on every visit. We persist both Accept and
+//     Decline as durable choices in localStorage; only an
+//     explicit "Cookie preferences" action in the footer
+//     (`#cookie-preferences`) reopens the banner.
+//
+//   - Banner is keyboard-accessible. role="dialog", aria-labelled,
+//     focus is moved to the Accept button on first show, the
+//     dialog is closeable via Escape (treated as Decline — least
+//     surprising default for an Escape key on a "do you allow X"
+//     dialog).
+//
+//   - No FOUC. The banner CSS is inlined into the rendered HTML
+//     so there is no one-frame visual jitter on first paint, and
+//     the banner is hidden by default (`hidden` attribute) so
+//     returning visitors who already chose never see it flash.
+//
+//   - No layout impact. The banner is `position: fixed` at the
+//     bottom; nothing on the page reflows when it appears or
+//     disappears. Combined with not being part of the document
+//     reading order until shown, this means CLS stays at zero.
+//
+// Why a single localStorage key, not an in-page form
+//
+//   The simplest schema that captures the consent decision is
+//   `dayseam-cookie-consent-v1 = "accepted" | "declined"`. The
+//   `-v1` suffix is intentional: if a future change broadens
+//   what we collect (say we add a third tracker), the key bumps
+//   to `-v2` and stale Accept choices stop applying — effectively
+//   re-prompting users. Versioning the key from day one is the
+//   cheapest way to keep that future option open.
+//
+// Why no "necessary / preferences / analytics / marketing" four-
+// tier UI like Cookiebot
+//
+//   The site has zero essential cookies. Every cookie this site
+//   would ever set is non-essential analytics. A four-tier
+//   checkbox UI for one category is theatre — a binary
+//   accept/decline is more honest and less to maintain.
+//
+// Reset hook
+//
+//   The footer renders an anchor with `href="#cookie-preferences"`.
+//   The inline script below listens for clicks on that anchor,
+//   clears the storage entry, and re-shows the banner so a user
+//   can change their mind. (Reload not required.)
+---
+
+<aside
+  id="cookie-consent"
+  role="dialog"
+  aria-labelledby="cookie-consent-title"
+  aria-describedby="cookie-consent-body"
+  hidden
+  class="fixed inset-x-4 bottom-4 z-50 mx-auto max-w-2xl rounded-2xl border border-white/10 bg-charcoal-900/95 p-5 shadow-2xl backdrop-blur sm:inset-x-auto sm:left-1/2 sm:-translate-x-1/2"
+>
+  <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+    <div class="flex-1 text-sm">
+      <p
+        id="cookie-consent-title"
+        class="font-mono text-[11px] uppercase tracking-[0.2em] text-strand-gold"
+      >
+        Cookies
+      </p>
+      <p id="cookie-consent-body" class="mt-2 text-zinc-300">
+        We use Google Analytics and Microsoft Clarity to understand which parts
+        of this site help people, and which parts confuse them. Both are
+        cookie-based. The Dayseam app itself ships
+        <a
+          class="underline decoration-zinc-500 underline-offset-2 hover:text-zinc-100 hover:decoration-zinc-300"
+          href="https://github.com/dayseam/dayseam/blob/master/docs/privacy-security.md"
+          target="_blank"
+          rel="noopener noreferrer">zero telemetry</a
+        > regardless of what you choose here.
+      </p>
+    </div>
+    <div class="flex flex-row gap-2 sm:flex-col">
+      <button
+        id="cookie-consent-accept"
+        type="button"
+        class="rounded-lg border border-strand-gold/40 bg-strand-gold/10 px-4 py-2 text-sm font-medium text-strand-gold transition hover:bg-strand-gold/20 focus:outline-none focus-visible:ring-2 focus-visible:ring-strand-gold"
+      >
+        Accept
+      </button>
+      <button
+        id="cookie-consent-decline"
+        type="button"
+        class="rounded-lg border border-white/10 bg-transparent px-4 py-2 text-sm font-medium text-zinc-300 transition hover:bg-white/5 hover:text-zinc-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-zinc-400"
+      >
+        Decline
+      </button>
+    </div>
+  </div>
+</aside>
+
+<script is:inline>
+  (function () {
+    var STORAGE_KEY = "dayseam-cookie-consent-v1";
+    var banner = document.getElementById("cookie-consent");
+    var acceptBtn = document.getElementById("cookie-consent-accept");
+    var declineBtn = document.getElementById("cookie-consent-decline");
+
+    if (!banner || !acceptBtn || !declineBtn) return;
+
+    function readChoice() {
+      try {
+        return window.localStorage.getItem(STORAGE_KEY);
+      } catch (_) {
+        return null;
+      }
+    }
+
+    function writeChoice(value) {
+      try {
+        window.localStorage.setItem(STORAGE_KEY, value);
+      } catch (_) {
+        /* storage blocked: choice is session-scoped, banner re-shows next visit */
+      }
+    }
+
+    function showBanner() {
+      banner.hidden = false;
+      // Move focus to Accept on first show — required for keyboard
+      // accessibility per WAI-ARIA dialog pattern. We don't trap
+      // focus inside the banner because the banner is non-modal
+      // (the page below remains usable while the banner is up).
+      window.requestAnimationFrame(function () {
+        acceptBtn.focus();
+      });
+    }
+
+    function hideBanner() {
+      banner.hidden = true;
+    }
+
+    function accept() {
+      writeChoice("accepted");
+      hideBanner();
+      // Tell <Analytics /> it can load now. Custom event keeps
+      // the components decoupled — Analytics doesn't have to know
+      // anything about the banner's DOM structure.
+      window.dispatchEvent(new CustomEvent("dayseam:consent-granted"));
+    }
+
+    function decline() {
+      writeChoice("declined");
+      hideBanner();
+    }
+
+    acceptBtn.addEventListener("click", accept);
+    declineBtn.addEventListener("click", decline);
+
+    // Escape-to-decline. Safer default than Escape-to-accept; if
+    // the user dismisses the dialog without engaging, treat that
+    // as "I didn't say yes".
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && !banner.hidden) {
+        decline();
+      }
+    });
+
+    // Footer "Cookie preferences" link reopens the banner so a
+    // user can revisit their choice. We listen for clicks on any
+    // anchor with href="#cookie-preferences" — the footer carries
+    // it; future pages can opt in by linking to the same hash.
+    document.addEventListener("click", function (event) {
+      var target = event.target;
+      if (!(target instanceof Element)) return;
+      var anchor = target.closest('a[href="#cookie-preferences"]');
+      if (!anchor) return;
+      event.preventDefault();
+      try {
+        window.localStorage.removeItem(STORAGE_KEY);
+      } catch (_) { /* private mode */ }
+      showBanner();
+    });
+
+    if (readChoice() === null) {
+      showBanner();
+    }
+  })();
+</script>
