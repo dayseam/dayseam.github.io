@@ -1,22 +1,97 @@
 ---
-// DAY-166. Base page layout.
+// DAY-166 / DAY-207. Base page layout.
 //
-// Responsibilities:
+// Responsibilities
 //   - HTML shell, character set, viewport.
 //   - Brand-aware favicon + SVG source of truth.
 //   - Inter / JetBrains Mono via @fontsource CDN-free fallbacks.
 //   - Open Graph + Twitter Card meta (per page — title/description
-//     props make the layout reusable for future /privacy, /changelog,
-//     etc. subpages).
+//     props make the layout reusable for /integrations/<tool>,
+//     /blog/<slug>, /privacy, /changelog, etc. subpages).
+//   - JSON-LD SoftwareApplication + Organization structured data
+//     for Google rich-result eligibility.
+//   - Google Search Console verification meta (env-var-driven so a
+//     fork can publish without inheriting our verification token).
+//   - Mounts the GA4 + Microsoft Clarity loader and the
+//     consent banner (both consent-gated; see DAY-207 below).
 //   - The global.css that sets the charcoal default background and
 //     the reduced-motion gate used by every other component.
 //
-// Intentionally NOT included here: analytics/telemetry scripts.
-// The site ships zero tracking; the "no telemetry" trust bullet on
-// the landing would be a lie if this layout quietly loaded GA.
+// DAY-207: analytics on the marketing site
+//
+//   The previous incarnation of this file had a load-bearing
+//   comment that read "Intentionally NOT included here:
+//   analytics/telemetry scripts. The site ships zero tracking;
+//   the 'no telemetry' trust bullet on the landing would be a lie
+//   if this layout quietly loaded GA." That comment was
+//   protecting a brand promise the previous author cared about
+//   even though the trust strip itself technically scopes its
+//   "zero telemetry" claim to the desktop app's outbound CSP, not
+//   the marketing site. DAY-207 makes that scoping explicit (see
+//   `TrustStrip.astro` for the matching comment) and adds GA4 +
+//   Clarity to the *marketing site only*, gated by an explicit
+//   consent banner. The desktop app's CSP-enforced "no host you
+//   didn't configure yourself" guarantee is unchanged — that's
+//   the contract this comment used to be protecting, and it is
+//   still protected, in the only place it actually applies.
+//
+//   Why analytics here at all: the site is the funnel. Without
+//   measurement we can't tell whether a Show HN post drives more
+//   sign-ups than a Product Hunt post, whether the connector
+//   grid pulls or repels, whether the download CTA is even
+//   visible to first-paint scrollers. A tracker-less marketing
+//   site is a noble gesture for a hobby project; for a product
+//   that wants to grow, it's a self-imposed blindfold.
+//
+//   What we use:
+//     1. GA4 — pageviews, sources, devices, retention. Free.
+//     2. Microsoft Clarity — heatmaps + session replays. Free.
+//        Captures *qualitative* feel (where do people hover,
+//        rage-click, scroll-stall) that GA4 is structurally bad
+//        at. No PII captured by default; replays auto-mask form
+//        inputs.
+//
+//   What we don't:
+//     - No Meta / Facebook pixel, no LinkedIn pixel, no TikTok
+//       pixel, no third-party retargeting. Not because they're
+//       intrinsically evil but because we're not running paid
+//       campaigns that would justify the privacy cost.
+//
+//   How it's wired:
+//     - `Analytics.astro` reads PUBLIC_GA_MEASUREMENT_ID and
+//       PUBLIC_CLARITY_PROJECT_ID from Astro's env. If both are
+//       empty (preview deploys, forks, local dev without .env)
+//       the component renders zero markup.
+//     - `CookieConsent.astro` collects the user's consent and
+//       persists it in localStorage under
+//       `dayseam-cookie-consent-v1`. Until that key is
+//       "accepted", neither tracker is loaded.
+//     - The consent banner is a binary accept/decline: the site
+//       has no essential cookies, so a four-tier preference UI
+//       would be theatre. EDPB guidance also requires
+//       equally-weighted Accept and Decline controls, which the
+//       binary surface trivially satisfies.
+//
+// DAY-207: SEO surface area
+//
+//   Pre-DAY-207 the site shipped:
+//     - canonical link        ✓
+//     - og:title / og:desc    ✓
+//     - twitter:card          ✓
+//     - og:image              ✗
+//     - twitter:image         ✗
+//     - json-ld structured    ✗
+//     - robots.txt            ✗
+//     - sitemap.xml           ✗
+//     - GSC verification      ✗
+//
+//   This file closes the head-meta gaps. `astro.config.mjs` adds
+//   @astrojs/sitemap; `public/robots.txt` advertises it.
 import "../styles/global.css";
 import SiteNav from "../components/SiteNav.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import Analytics from "../components/Analytics.astro";
+import CookieConsent from "../components/CookieConsent.astro";
 
 interface Props {
   title?: string;
@@ -24,11 +99,74 @@ interface Props {
 }
 
 const {
-  title = "Dayseam, the report of your day, written from evidence",
-  description = "Dayseam is a local first work reporting app that stitches evidence from GitHub, GitLab, Jira, Confluence, and your local repos into an editable daily report, and saves it to Markdown or your Obsidian vault. Free, no account, no telemetry",
+  title = "Dayseam — the daily work report, written from evidence",
+  description = "Dayseam is a free, local-first daily work report app for engineers. It stitches evidence from GitHub, GitLab, Jira, Confluence, and your local git repos into an editable end-of-day report, and saves it to Markdown or your Obsidian vault. No account, no cloud, no app telemetry.",
 } = Astro.props;
 
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://dayseam.github.io").toString();
+const siteOrigin = Astro.site ?? new URL("https://dayseam.github.io");
+const canonicalUrl = new URL(Astro.url.pathname, siteOrigin).toString();
+const ogImageUrl = new URL("/og-image.png", siteOrigin).toString();
+
+// Google Search Console verification meta. Threaded through the
+// deploy workflow as PUBLIC_GSC_VERIFICATION (a repo secret).
+// Empty string in dev / forks — the meta tag is omitted entirely
+// rather than rendering with an empty content attribute, which
+// GSC treats as a verification failure on the matching property.
+const gscVerification = import.meta.env.PUBLIC_GSC_VERIFICATION ?? "";
+
+// JSON-LD structured data for rich-result eligibility on Google.
+// Two graphs ship per page:
+//
+//   1. SoftwareApplication — describes the desktop app the
+//      marketing site exists to promote. The price=0 +
+//      priceCurrency=USD pattern is how Google flags free
+//      software in SERP results (Schema.org's `Offer` shape; an
+//      omitted price field is interpreted as "unknown / contact
+//      for pricing", which is wrong for an MIT-licensed download).
+//
+//   2. Organization — establishes the brand entity so Google can
+//      link the site to the GitHub org and to future Google
+//      Knowledge Graph entries. `sameAs` lists every authoritative
+//      surface that represents the same entity.
+//
+// Both graphs reference the same canonical og:image so social and
+// search rich-result thumbnails stay consistent.
+const softwareApplicationLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "Dayseam",
+  description,
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "macOS 12 or later",
+  url: siteOrigin.toString(),
+  downloadUrl: "https://github.com/dayseam/dayseam/releases/latest/download/Dayseam.dmg",
+  softwareVersion: "0.9",
+  image: ogImageUrl,
+  license: "https://github.com/dayseam/dayseam/blob/master/LICENSE",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+    availability: "https://schema.org/InStock",
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Dayseam",
+    url: siteOrigin.toString(),
+  },
+};
+
+const organizationLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Dayseam",
+  url: siteOrigin.toString(),
+  logo: new URL("/dayseam-mark.svg", siteOrigin).toString(),
+  sameAs: [
+    "https://github.com/dayseam/dayseam",
+    "https://github.com/dayseam",
+  ],
+};
 ---
 
 <!doctype html>
@@ -40,6 +178,12 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://dayseam.
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl} />
 
+    {
+      gscVerification && (
+        <meta name="google-site-verification" content={gscVerification} />
+      )
+    }
+
     <link rel="icon" type="image/svg+xml" href="/dayseam-mark.svg" />
 
     <meta property="og:type" content="website" />
@@ -47,12 +191,29 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://dayseam.
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonicalUrl} />
     <meta property="og:site_name" content="Dayseam" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Dayseam — the daily work report, written from evidence" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+    <meta name="twitter:image:alt" content="Dayseam — the daily work report, written from evidence" />
 
     <meta name="theme-color" content="#17171A" />
+
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(softwareApplicationLd)}
+    />
+    <script
+      type="application/ld+json"
+      set:html={JSON.stringify(organizationLd)}
+    />
+
+    <Analytics />
   </head>
   <body class="min-h-screen bg-charcoal-800 text-zinc-100 font-sans antialiased">
     <SiteNav />
@@ -60,5 +221,6 @@ const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://dayseam.
       <slot />
     </main>
     <SiteFooter />
+    <CookieConsent />
   </body>
 </html>
