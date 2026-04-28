@@ -100,7 +100,7 @@ interface Props {
 
 const {
   title = "Dayseam — the daily work report, written from evidence",
-  description = "Dayseam is a free, local-first daily work report app for engineers. It stitches evidence from GitHub, GitLab, Jira, Confluence, and your local git repos into an editable end-of-day report, and saves it to Markdown or your Obsidian vault. No account, no cloud, no app telemetry.",
+  description = "Dayseam is a free, local-first daily work report app for engineers. It stitches evidence from GitHub, GitLab, Jira, Confluence, Outlook, and your local git repos into an editable end-of-day report, and saves it to Markdown or your Obsidian vault. No account, no cloud, no app telemetry.",
 } = Astro.props;
 
 const siteOrigin = Astro.site ?? new URL("https://dayseam.github.io");
@@ -205,10 +205,12 @@ const organizationLd = {
     <meta name="theme-color" content="#17171A" />
 
     <script
+      is:inline
       type="application/ld+json"
       set:html={JSON.stringify(softwareApplicationLd)}
     />
     <script
+      is:inline
       type="application/ld+json"
       set:html={JSON.stringify(organizationLd)}
     />

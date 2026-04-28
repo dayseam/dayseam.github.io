@@ -1,12 +1,39 @@
 ---
-// DAY-166. The connector grid — shipping + coming-soon.
+// DAY-166 / DAY-210. The connector grid — shipping + coming-soon.
 //
 // Shows the two populations in `~/data/connectors.ts`:
-//   - SHIPPING (5): lit tile, connector-coloured chip, real pitch.
+//   - SHIPPING (6 since DAY-210 added Outlook): lit tile,
+//     connector-coloured chip, real pitch.
 //   - COMING_SOON (5): greyed tile with a "soon" ribbon. Deliberate
 //     so a visitor can see the trajectory without us making vapour-
 //     ware claims. If one of these ships, flip it to SHIPPING in
 //     `connectors.ts`; no other site code needs to change.
+//
+// Layout note (DAY-210):
+//   The shipping shelf is `lg:grid-cols-6` and the coming-soon
+//   shelf is `lg:grid-cols-5`. Both render as a single row at lg
+//   breakpoint, which is the visual rhythm the section was
+//   designed around (two stacked shelves, label above, chips
+//   below). Forcing both to the same column count would either
+//   leave a trailing empty cell on coming-soon (`grid-cols-6` for
+//   both) or wrap the sixth shipping tile to a stub second row
+//   (`grid-cols-5` for both — the worst look). Asymmetric column
+//   counts keep both shelves single-row at a tiny cost in card
+//   width on shipping; the cards remain readable at ~175px wide
+//   because the pitches are short enough to wrap to two or three
+//   lines either way.
+//
+// "Open a connector request" link (DAY-210):
+//   The link uses `?labels=enhancement&title=Connector+request:+`
+//   instead of an issue-template URL because dayseam/dayseam does
+//   not currently ship `.github/ISSUE_TEMPLATE/connector_request.md`
+//   nor a `connector` label. The previous URL referenced both,
+//   which silently no-op'd both query params on GitHub's side and
+//   dropped the visitor onto a generic blank issue with no signal
+//   that they'd asked for a connector. `enhancement` is one of the
+//   default labels that does exist on the repo; the title prefix
+//   carries the "connector request" intent without requiring an
+//   issue template that may or may not survive future repo cleanup.
 import { SHIPPING, COMING_SOON } from "~/data/connectors";
 ---
 
@@ -20,7 +47,7 @@ import { SHIPPING, COMING_SOON } from "~/data/connectors";
       Every surface where work happens
     </h2>
     <p class="mt-4 text-balance text-zinc-400">
-      Five connectors ship today. More are on deck, and the connector
+      Six connectors ship today. More are on deck, and the connector
       architecture means they arrive as new crates, not rearchitectures
     </p>
   </div>
@@ -28,7 +55,7 @@ import { SHIPPING, COMING_SOON } from "~/data/connectors";
   <h3 class="mt-14 font-mono text-[11px] uppercase tracking-[0.2em] text-cream/60">
     Shipping today
   </h3>
-  <ul class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+  <ul class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-6">
     {
       SHIPPING.map((connector) => (
         <li
@@ -83,7 +110,7 @@ import { SHIPPING, COMING_SOON } from "~/data/connectors";
   <p class="mx-auto mt-12 max-w-2xl text-center text-sm text-zinc-500">
     Want a source that isn't here yet?
     <a
-      href="https://github.com/dayseam/dayseam/issues/new?labels=connector&template=connector_request.md"
+      href="https://github.com/dayseam/dayseam/issues/new?labels=enhancement&title=Connector%20request%3A%20"
       class="text-cream hover:underline focus-visible:underline"
       target="_blank"
       rel="noopener noreferrer"

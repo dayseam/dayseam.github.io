@@ -123,7 +123,7 @@ const svg = `<?xml version="1.0" encoding="UTF-8"?>
     <text x="540" y="290" font-size="92" font-weight="700" fill="#FFFFFF" letter-spacing="-2">Dayseam</text>
     <text x="540" y="350" font-size="32" font-weight="500" fill="${COLORS.zincLight}">The daily work report,</text>
     <text x="540" y="395" font-size="32" font-weight="500" fill="${COLORS.zincLight}">written from evidence.</text>
-    <text x="540" y="455" font-size="22" font-weight="400" fill="${COLORS.zincMid}">GitHub. GitLab. Jira. Confluence. Local git.</text>
+    <text x="540" y="455" font-size="22" font-weight="400" fill="${COLORS.zincMid}">GitHub. GitLab. Jira. Confluence. Outlook. Local git.</text>
     <text x="540" y="488" font-size="22" font-weight="400" fill="${COLORS.zincMid}">Stitched into Markdown, on your laptop.</text>
   </g>
 

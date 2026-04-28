@@ -3,12 +3,14 @@
  *
  * Two populations live here:
  *
- *   1. `SHIPPING` — the five connectors that land in today's
- *      release. Brand paths are duplicated (intentionally) from
- *      `apps/desktop/src/components/ConnectorLogo.tsx` rather than
- *      hoisted into `@dayseam/ui` as a shared package; the hoist
- *      is tracked as a follow-up, and duplicating seven lines of
- *      SVG path data is vastly cheaper than reshaping two
+ *   1. `SHIPPING` — the connectors that land in the desktop app
+ *      today. Started life as five (DAY-166); Outlook joined in
+ *      DAY-210 once the desktop app's OAuth wiring landed, taking
+ *      the count to six. Brand paths are duplicated (intentionally)
+ *      from `apps/desktop/src/components/ConnectorLogo.tsx` rather
+ *      than hoisted into `@dayseam/ui` as a shared package; the
+ *      hoist is tracked as a follow-up, and duplicating seven lines
+ *      of SVG path data is vastly cheaper than reshaping two
  *      workspaces in the same PR. If a connector's brand mark
  *      changes, update BOTH files — CI has no gate for this drift
  *      yet, it is a process note.
@@ -39,6 +41,15 @@
  *   hues as connector accents to reinforce the logo rhyme at the
  *   cost of recognisability; DAY-166 review flipped that
  *   trade-off.
+ *
+ *   The mark itself stays at five strands — see
+ *   `public/dayseam-mark.svg` for the explicit "if a sixth
+ *   connector ships, either fan a sixth strand OR keep the
+ *   silhouette and let the new connector share a strand colour"
+ *   contract. Outlook follows option (b): canonical Microsoft
+ *   blue `#0078D4` lands close enough to the indigo strand that
+ *   the mark continues to read as "five strands converging" while
+ *   the connector chip below is unmistakably Outlook.
  *
  * Every path in both populations is sourced from Simple Icons
  * (https://simpleicons.org), which is CC0-licensed. The marks
@@ -79,7 +90,11 @@ export interface Connector {
 }
 
 // ---------------------------------------------------------------------------
-// Shipping connectors (five strand hues from the Convergence mark).
+// Shipping connectors. Six items today (DAY-166 introduced five;
+// DAY-210 added Outlook). The Convergence mark itself is still a
+// five-strand silhouette — see the colour-policy block in the
+// module docstring for why a sixth shipping connector doesn't
+// require a sixth strand on the brand mark.
 // ---------------------------------------------------------------------------
 
 const GITHUB_PATH =
@@ -96,6 +111,18 @@ const CONFLUENCE_PATH =
 
 const GIT_PATH =
   "M23.546 10.93L13.067.452c-.604-.603-1.582-.603-2.188 0L8.708 2.627l2.76 2.76c.645-.215 1.379-.07 1.889.441.516.515.658 1.258.438 1.9l2.658 2.66c.645-.223 1.387-.078 1.9.435.721.72.721 1.884 0 2.604-.719.719-1.881.719-2.6 0-.539-.541-.674-1.337-.404-1.996L12.86 8.955v6.525c.176.086.342.203.488.348.713.721.713 1.883 0 2.6-.719.721-1.889.721-2.609 0-.719-.719-.719-1.879 0-2.598.182-.18.387-.316.605-.406V8.835c-.217-.091-.424-.222-.6-.401-.545-.545-.676-1.342-.396-2.009L7.636 3.7.45 10.881c-.6.605-.6 1.584 0 2.189l10.43 10.477c.604.604 1.582.604 2.186 0l10.48-10.43c.605-.603.605-1.582 0-2.187";
+
+// Microsoft Outlook — Simple Icons `microsoftoutlook` (CC0). The
+// canonical glyph is two parts: an "O" letterform on the left and
+// the calendar/envelope on the right. Both sub-paths live in this
+// single `d` string (multiple `M` move-tos), which renders fine
+// with `fill-rule="nonzero"` (the default). Outlook is the first
+// shipping connector whose auth path is OAuth (Microsoft Entra
+// ID) rather than a paste-the-PAT flow — implementation detail
+// for the desktop app, but it's why TrustStrip's body copy reads
+// "credentials" rather than "PATs" since DAY-210.
+const OUTLOOK_PATH =
+  "M7.88 12.04q0 .45-.11.87-.1.41-.33.74-.22.33-.58.52-.37.2-.87.2t-.85-.2q-.35-.21-.57-.55-.22-.33-.33-.75-.1-.42-.1-.86t.1-.87q.1-.43.34-.76.22-.34.59-.54.36-.2.87-.2t.86.2q.35.21.57.55.22.34.31.77.1.43.1.88zM24 12v9.38q0 .46-.33.8-.33.32-.8.32H7.13q-.46 0-.8-.33-.32-.33-.32-.8V18H1q-.41 0-.7-.3-.3-.29-.3-.7V7q0-.41.3-.7Q.58 6 1 6h6.5V2.55q0-.44.3-.75.3-.3.75-.3h12.9q.44 0 .75.3.3.3.3.75V10.85l1.24.72h.01q.1.07.18.18.07.12.07.25zm-6-8.25v3h3v-3zm0 4.5v3h3v-3zm0 4.5v1.83l3.05-1.83zm-5.25-9v3h3.75v-3zm0 4.5v3h3.75v-3zm0 4.5v2.03l2.41 1.5 1.34-.8v-2.73zM9 3.75V6h2l.13.01.12.04v-2.3zM5.98 15.98q.9 0 1.6-.3.7-.32 1.19-.86.48-.55.73-1.28.25-.74.25-1.61 0-.83-.25-1.55-.24-.71-.71-1.24t-1.15-.83q-.68-.3-1.55-.3-.92 0-1.64.3-.71.3-1.2.85-.5.54-.75 1.3-.25.74-.25 1.63 0 .85.26 1.56.26.72.74 1.23.48.52 1.17.81.69.3 1.56.3zM7.5 21h12.39L12 16.08V17q0 .41-.3.7-.29.3-.7.3H7.5zm15-.13v-7.24l-5.9 3.54Z";
 
 // ---------------------------------------------------------------------------
 // Coming-soon connectors (Simple Icons paths, CC0).
@@ -183,6 +210,30 @@ export const SHIPPING: readonly Connector[] = [
     // Simple Icons canonical Git mark red-orange.
     accent: "#F05032",
     path: GIT_PATH,
+  },
+  {
+    id: "outlook",
+    kind: "Outlook",
+    // Capital "O" deliberately — Microsoft renders the product
+    // name as "Outlook" in their own UI surfaces and the desktop
+    // app's `SOURCE_KIND_LABEL` mirrors that. If the desktop side
+    // adopts a different casing (e.g. "Microsoft Outlook" full
+    // form), update this row to match — the same casing-drift
+    // failure mode that Local git was flagged for at review.
+    name: "Outlook",
+    // Pitch follows the existing pattern — concrete actions plus
+    // a one-clause narrative tail. Email and calendar are the two
+    // distinct evidence streams the connector ingests, so the
+    // pitch names both rather than collapsing them into "email".
+    pitch: "Emails sent, meetings attended, the rhythm of your day",
+    // Canonical Microsoft Outlook blue. Sits visibly distinct
+    // from Jira's deeper #0052CC and Confluence's lighter
+    // #2684FF on a charcoal background even though all three
+    // are blues — Outlook's slightly cyan-shifted hue plus the
+    // distinctive "O + envelope" silhouette is enough to
+    // disambiguate at chip-size in the icon-rain.
+    accent: "#0078D4",
+    path: OUTLOOK_PATH,
   },
 ];
 

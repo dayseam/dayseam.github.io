@@ -18,15 +18,16 @@ endorsement or affiliation.
 | Jira            | `jira`             | `src/data/connectors.ts` — `JIRA_PATH`   |
 | Confluence      | `confluence`       | `src/data/connectors.ts` — `CONFLUENCE_PATH` |
 | Git             | `git`              | `src/data/connectors.ts` — `GIT_PATH`    |
+| Microsoft Outlook | `microsoftoutlook` | `src/data/connectors.ts` — `OUTLOOK_PATH` |
 | Slack           | `slack`            | `src/data/connectors.ts` — `SLACK_PATH`  |
 | Microsoft Teams | `microsoftteams`   | `src/data/connectors.ts` — `TEAMS_PATH`  |
 | Linear          | `linear`           | `src/data/connectors.ts` — `LINEAR_PATH` |
 | Microsoft Word  | `microsoftword`    | `src/data/connectors.ts` — `WORD_PATH`   |
 | Microsoft Excel | `microsoftexcel`   | `src/data/connectors.ts` — `EXCEL_PATH`  |
 
-The first five (GitHub, GitLab, Jira, Confluence, Git) also ship in the
-Dayseam desktop app and are kept in sync by hand; the canonical copy in the
-monorepo is at
+The first six (GitHub, GitLab, Jira, Confluence, Git, Microsoft Outlook) also
+ship in the Dayseam desktop app and are kept in sync by hand; the canonical
+copy in the monorepo is at
 [`apps/desktop/src/components/ConnectorLogo.tsx`](https://github.com/dayseam/dayseam/blob/master/apps/desktop/src/components/ConnectorLogo.tsx).
 If Simple Icons updates a mark upstream, change both files in the same
 monorepo PR — there is no CI gate enforcing the consistency today.
