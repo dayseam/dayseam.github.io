@@ -29,18 +29,29 @@ import { SHIPPING, type Connector } from "~/data/connectors";
  *     group inside it has a `<emoji> <Label>` subheader, and each
  *     bullet has the small grey dot + text
  *   - A small "at a glance" donut chart summarising the day by
- *     source kind (this is a deliberate near-future product hint;
- *     the real app does not render one today, but the multi-segment
- *     donut using real connector accents reinforces "many tools,
- *     one day, one picture"). The mock's donut still shows the
- *     original five shipping connectors; DAY-210 added Outlook to
- *     the SHIPPING list but deliberately did NOT extend the mock's
- *     bullets or donut to include an Outlook segment, because the
- *     mock's narrative shape (two sections — COMMITS, PULL
- *     REQUESTS) doesn't naturally accommodate email/meeting
- *     evidence. Extending the mock to mirror Outlook output is
- *     tracked as follow-up work, decoupled from the connector-grid
- *     rollout in DAY-210.
+ *     source kind, with each slice painted in its connector's
+ *     accent so the chart's colours rhyme with the connector
+ *     logos in the sidebar above. From DAY-166 through the v0.9
+ *     release this was a "deliberate near-future product hint"
+ *     — the marketing mock rendered the donut, the desktop app
+ *     did not. DAY-211 in `dayseam/dayseam` closes that gap by
+ *     adding `DaySummaryChart` to `StreamingPreview`, so once
+ *     the next release ships, downloaders see the same per-day
+ *     donut at the top of their real report. Until that release
+ *     lands, this comment is the one source of truth that
+ *     downloaders are not yet getting the chart they see in the
+ *     mock; if you ship a release before this docstring is
+ *     updated again, that's a credibility bug.
+ *
+ *     DAY-212 also adds an Outlook slice to the mock's donut
+ *     (Outlook went into SHIPPING in DAY-210 but the donut was
+ *     deferred at that time so the marketing-grid PR could ship
+ *     focused). The mock's two bullet sections (COMMITS, PULL
+ *     REQUESTS) still don't carry Outlook bullets — those would
+ *     need a meetings/inbox section the mock doesn't have today,
+ *     and inventing one purely for the mock would put the
+ *     marketing site ahead of the real desktop UI again, which
+ *     is the trap DAY-211 just dug us out of.
  *
  * The mock is NOT a screenshot (screenshots go stale the moment
  * the app chrome changes, and they look uncanny at hero scale).
@@ -93,14 +104,18 @@ const KIND_EMOJI: Record<string, string> = {
   Jira: "📋",
   Confluence: "📄",
   LocalGit: "💻",
-  // DAY-210. Outlook is in the SHIPPING list as of DAY-210 but
-  // does not yet appear in the mock's bullets or donut (see the
-  // module docstring for why the mock is deliberately not
-  // extended in the same PR). The entry is here so a future PR
-  // that does add Outlook bullets gets the right emoji rather
-  // than the fallback "•". Cross-check this against the desktop
-  // app's `SOURCE_KIND_EMOJI` before relying on it — the desktop
-  // canonical mapping wins.
+  // DAY-210 / DAY-212. Outlook is in SHIPPING as of DAY-210 and
+  // now also appears in the donut (DAY-212). It still does NOT
+  // appear in the mock's bullets — see the module docstring for
+  // why adding a meetings/inbox section to the mock would put the
+  // marketing site ahead of the real desktop UI. The entry stays
+  // here so a future PR that does add Outlook bullets renders
+  // the right emoji rather than the fallback "•". The desktop
+  // app's `SOURCE_KIND_EMOJI` is "📅" (calendar), not "✉️"; we
+  // diverge here on purpose because the mock's donut + legend
+  // surface inbox-and-meetings together and an envelope reads
+  // more universally at 11px legend size than the calendar
+  // glyph. Cross-check before adding actual Outlook bullets.
   Outlook: "✉️",
 };
 
@@ -168,14 +183,20 @@ const PRS_SECTION: Section = {
 };
 
 // Donut values must sum to 100. Numbers are deliberately uneven
-// (not 20/20/20/20/20) so the chart reads as "real data from your
-// actual day" rather than a placeholder divided into fifths.
+// (not 1/N for every slice) so the chart reads as "real data from
+// your actual day" rather than a placeholder divided into equal
+// parts. DAY-212 adds an Outlook slice (8%) by trimming GitHub from
+// 34 to 30 and GitLab from 22 to 18 — Outlook reads as a small but
+// non-trivial chunk of the day, which matches how a real engineer's
+// inbox + meeting time tends to sum out, without overwhelming the
+// commit-and-ticket bias the mock is meant to convey.
 const DONUT: readonly { readonly connectorId: string; readonly pct: number }[] = [
-  { connectorId: "github", pct: 34 },
-  { connectorId: "gitlab", pct: 22 },
+  { connectorId: "github", pct: 30 },
+  { connectorId: "gitlab", pct: 18 },
   { connectorId: "jira", pct: 18 },
   { connectorId: "confluence", pct: 14 },
   { connectorId: "localgit", pct: 12 },
+  { connectorId: "outlook", pct: 8 },
 ];
 
 /**
