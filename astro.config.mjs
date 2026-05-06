@@ -51,8 +51,8 @@ export default defineConfig({
     // time. The integration walks every route Astro knows about
     // (`src/pages/**/*.astro` plus dynamic `getStaticPaths`) and
     // generates an XML index + per-batch sitemap with the canonical
-    // URL derived from `site` above. We only have one route today
-    // (`/`); when DAY-208 lands the per-integration landing pages
+    // URL derived from `site` above. Routes today: `/`, `/privacy`;
+    // when DAY-208 lands the per-integration landing pages
     // (`/integrations/<tool>`) the sitemap auto-includes them with
     // zero config changes — that's the whole point of generating it
     // from routes instead of hand-maintaining a list. `lastmod` falls

@@ -1,0 +1,141 @@
+---
+import Base from "../layouts/Base.astro";
+
+const title = "Privacy — Dayseam";
+const description =
+  "How Dayseam handles your data: the desktop app (local-first, Keychain, no telemetry) and this marketing site (optional analytics with consent).";
+---
+
+<Base {title} {description}>
+  <article class="mx-auto max-w-3xl px-6 py-16 pb-24">
+    <header class="border-b border-white/10 pb-8">
+      <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-strand-teal">Privacy</p>
+      <h1 class="mt-3 text-balance text-3xl font-semibold tracking-tight text-zinc-50 sm:text-4xl">
+        Privacy &amp; data practices
+      </h1>
+      <p class="mt-4 text-pretty text-base leading-relaxed text-zinc-400">
+        This page is the public summary for <strong class="text-zinc-300">App Store Connect</strong>, privacy
+        questionnaires, and anyone evaluating Dayseam before install. Two surfaces: the
+        <strong class="text-zinc-300">Dayseam desktop app</strong> (the product) and
+        <strong class="text-zinc-300">this website</strong> (marketing only).
+      </p>
+      <p class="mt-4 text-sm text-zinc-500">
+        Technical deep-dive (paths, IPC, CSP, entitlements) lives in the open-source repo:
+        <a
+          href="https://github.com/dayseam/dayseam/blob/master/docs/privacy-security.md"
+          class="text-strand-teal underline decoration-strand-teal/40 underline-offset-2 hover:text-strand-teal/90"
+          target="_blank"
+          rel="noopener noreferrer"
+          >docs/privacy-security.md</a
+        >.
+      </p>
+    </header>
+
+    <div class="mt-12 space-y-12 text-[15px] leading-relaxed text-zinc-300">
+      <section aria-labelledby="desktop-heading">
+        <h2 id="desktop-heading" class="text-xl font-semibold text-zinc-50">Dayseam desktop app</h2>
+        <p class="mt-4">
+          Dayseam is <strong class="text-zinc-200">local-first</strong>. Your reports, cached activity, and evidence
+          live in a <strong class="text-zinc-200">SQLite database</strong> under your macOS user (Application Support).
+          The <strong class="text-zinc-200">direct-download</strong> build and the
+          <strong class="text-zinc-200">Mac App Store</strong> build use
+          <strong class="text-zinc-200">different bundle IDs</strong>, so they keep
+          <strong class="text-zinc-200">separate</strong> database folders if both are installed.
+        </p>
+        <ul class="mt-4 list-disc space-y-2 pl-5 text-zinc-400">
+          <li>
+            <strong class="text-zinc-300">Secrets</strong> (personal access tokens, API tokens, OAuth refresh tokens)
+            are stored in the <strong class="text-zinc-200">macOS Keychain</strong>, not in plaintext in the database.
+          </li>
+          <li>
+            <strong class="text-zinc-300">Network</strong>: the app contacts
+            <strong class="text-zinc-200">only</strong> the services you configure (e.g. GitLab, GitHub, Atlassian,
+            Microsoft identity endpoints) plus, on the <strong class="text-zinc-200">direct-download</strong> SKU,
+            <strong class="text-zinc-200">GitHub Releases</strong> for updates. There is
+            <strong class="text-zinc-200">no Dayseam-operated cloud backend</strong> and no mandatory account.
+          </li>
+          <li>
+            <strong class="text-zinc-300">Telemetry</strong>: the app does <strong class="text-zinc-200">not</strong> ship
+            analytics or crash-reporting SDKs. Outbound traffic is driven by your connectors and (where applicable) the
+            updater.
+          </li>
+          <li>
+            <strong class="text-zinc-300">Mac App Store</strong>: updates come through the App Store; the in-app Tauri
+            updater is not used for that SKU. Sandboxing and entitlements follow Apple’s requirements for the store
+            build.
+          </li>
+        </ul>
+      </section>
+
+      <section aria-labelledby="website-heading">
+        <h2 id="website-heading" class="text-xl font-semibold text-zinc-50">This website (dayseam.github.io)</h2>
+        <p class="mt-4">
+          The marketing site is <strong class="text-zinc-200">static</strong>. It does not run Dayseam and does not
+          access your app data.
+        </p>
+        <p class="mt-4">
+          With your <strong class="text-zinc-200">consent</strong> (cookie banner), we may load
+          <strong class="text-zinc-200">Google Analytics 4</strong> and
+          <strong class="text-zinc-200">Microsoft Clarity</strong> to understand how visitors use these pages (e.g.
+          page views, funnels, anonymised session quality). You can accept or decline; until you choose, those tags do
+          not load. You can change your mind anytime via
+          <strong class="text-zinc-200">Cookie preferences</strong> in the footer.
+        </p>
+        <p class="mt-4 text-zinc-400">
+          That consent model applies <strong class="text-zinc-300">only to this site</strong>. It does not change the
+          desktop app’s “no telemetry” posture described above.
+        </p>
+      </section>
+
+      <section aria-labelledby="rights-heading">
+        <h2 id="rights-heading" class="text-xl font-semibold text-zinc-50">Your choices &amp; contact</h2>
+        <ul class="mt-4 list-disc space-y-2 pl-5 text-zinc-400">
+          <li>
+            <strong class="text-zinc-300">App data</strong>: delete the app and remove its Application Support folder if
+            you want all local state gone; revoke tokens at each provider as you would for any API client.
+          </li>
+          <li>
+            <strong class="text-zinc-300">Security vulnerabilities</strong>: please use
+            <a
+              href="https://github.com/dayseam/dayseam/security"
+              class="text-strand-teal underline decoration-strand-teal/40 underline-offset-2 hover:text-strand-teal/90"
+              target="_blank"
+              rel="noopener noreferrer"
+              >GitHub private reporting</a
+            >
+            for the
+            <code class="rounded bg-white/5 px-1.5 py-0.5 font-mono text-[13px] text-zinc-300">dayseam/dayseam</code>
+            repository, not a public issue.
+          </li>
+          <li>
+            <strong class="text-zinc-300">General questions</strong>:
+            <a
+              href="https://github.com/dayseam/dayseam/issues"
+              class="text-strand-teal underline decoration-strand-teal/40 underline-offset-2 hover:text-strand-teal/90"
+              target="_blank"
+              rel="noopener noreferrer"
+              >GitHub issues</a
+            >.
+          </li>
+        </ul>
+      </section>
+
+      <section class="rounded-xl border border-white/10 bg-charcoal-900/40 p-6" aria-labelledby="updates-heading">
+        <h2 id="updates-heading" class="text-lg font-semibold text-zinc-50">Keeping this page accurate</h2>
+        <p class="mt-3 text-sm text-zinc-400">
+          When the app’s behaviour changes in a way that matters for privacy (new data types, new network endpoints,
+          new third parties), we update this page and the technical document in lockstep. Last reviewed:
+          <strong class="text-zinc-300">May 2026</strong>.
+        </p>
+      </section>
+
+      <p class="text-center text-sm text-zinc-500">
+        <a
+          href="/"
+          class="text-strand-teal underline decoration-strand-teal/40 underline-offset-2 hover:text-strand-teal/90"
+          >Back to home</a
+        >
+      </p>
+    </div>
+  </article>
+</Base>
