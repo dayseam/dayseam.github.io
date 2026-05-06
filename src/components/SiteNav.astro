@@ -7,6 +7,10 @@
 // a nav with a few in-page anchors reads as confident and focused
 // rather than empty.
 //
+// In-page anchors use `/#…` so they resolve from any route (e.g.
+// `/privacy` → home sections). `/privacy` is the App Store–friendly
+// public policy page.
+//
 // DAY-173 removed the top-right "Download for macOS" CTA. The
 // page already has a dedicated DownloadCTA section at the bottom
 // with the same "Ready in about a minute" copy and the same
@@ -24,15 +28,22 @@ import BrandMark from "./BrandMark.astro";
       <span class="font-semibold tracking-tight text-zinc-100">Dayseam</span>
     </a>
 
-    <ul class="hidden items-center gap-7 text-sm text-zinc-400 md:flex">
+    <ul
+      class="flex max-w-[min(100%,22rem)] flex-wrap items-center justify-end gap-x-5 gap-y-2 text-sm text-zinc-400 sm:max-w-none md:gap-x-7"
+    >
       <li>
-        <a href="#how-it-works" class="transition-colors hover:text-zinc-100 focus-visible:text-zinc-100">How it works</a>
+        <a href="/#how-it-works" class="transition-colors hover:text-zinc-100 focus-visible:text-zinc-100"
+          >How it works</a
+        >
       </li>
       <li>
-        <a href="#connectors" class="transition-colors hover:text-zinc-100 focus-visible:text-zinc-100">Connectors</a>
+        <a href="/#connectors" class="transition-colors hover:text-zinc-100 focus-visible:text-zinc-100">Connectors</a>
       </li>
       <li>
-        <a href="#trust" class="transition-colors hover:text-zinc-100 focus-visible:text-zinc-100">Privacy</a>
+        <a href="/#trust" class="transition-colors hover:text-zinc-100 focus-visible:text-zinc-100">Trust</a>
+      </li>
+      <li>
+        <a href="/privacy" class="transition-colors hover:text-zinc-100 focus-visible:text-zinc-100">Privacy policy</a>
       </li>
       <li>
         <a
