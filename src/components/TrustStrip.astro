@@ -3,10 +3,11 @@
 // fluff.
 //
 // Each bullet corresponds to a specific claim the product actually
-// backs up in code, referenced in docs/privacy-security.md:
+// backs up in code (see the engineering privacy appendix maintained
+// with releases, not linked from this public site):
 //
 //   - Local-first      → the SQLite store lives under the user's
-//                         home dir; see docs/privacy-security.md §1.
+//                         home dir.
 //   - No account       → there is literally no login screen, the
 //                         app never talks to a Dayseam server.
 //   - Keychain tokens  → crates/dayseam-secrets keys credentials
@@ -27,8 +28,8 @@
 // consent-gated analytics. If the body copy ever drifts to drop
 // "desktop" without also removing the marketing-site analytics,
 // that's a brand-promise regression and this file is where it
-// becomes visible. The canonical disclosure page is
-// docs/privacy-security.md, which must be kept in sync. The public
+// becomes visible. Engineering detail lives in materials maintained
+// with the product (not linked from the public site). The consumer
 // URL for App Store Connect and other listings is `/privacy`.
 ---
 
@@ -81,14 +82,6 @@
     Full policy for the app and this site:
     <a href="/privacy" class="text-strand-teal underline decoration-strand-teal/40 underline-offset-2 hover:text-strand-teal/90"
       >Privacy policy</a
-    >
-    · Technical detail:
-    <a
-      href="https://github.com/dayseam/dayseam/blob/master/docs/privacy-security.md"
-      class="text-strand-teal underline decoration-strand-teal/40 underline-offset-2 hover:text-strand-teal/90"
-      target="_blank"
-      rel="noopener noreferrer"
-      >docs/privacy-security.md</a
     >
   </p>
 </section>
