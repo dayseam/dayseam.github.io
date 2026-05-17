@@ -14,10 +14,17 @@
 // DAY-173 removed the top-right "Download for macOS" CTA. The
 // page already has a dedicated DownloadCTA section at the bottom
 // with the same "Ready in about a minute" copy and the same
-// `/releases/latest` link, so the top button was a duplicate
-// conversion surface rather than a second funnel. Keeping a single
-// download CTA also lets the nav stay quiet enough to not compete
-// with the hero animation immediately below it.
+// install surface (now the Mac App Store badge, since the
+// Mac-App-Store cutover sunset the direct-download SKU), so the
+// top button was a duplicate conversion surface rather than a
+// second funnel. Keeping a single download CTA also lets the nav
+// stay quiet enough to not compete with the hero animation
+// immediately below it.
+//
+// The Mac-App-Store cutover additionally removed the outbound
+// "GitHub" link from the right end of the nav: the product source
+// repo is no longer public, so a "GitHub" entry would 404 for the
+// public visitor it was for.
 import BrandMark from "./BrandMark.astro";
 ---
 
@@ -44,16 +51,6 @@ import BrandMark from "./BrandMark.astro";
       </li>
       <li>
         <a href="/privacy" class="transition-colors hover:text-zinc-100 focus-visible:text-zinc-100">Privacy policy</a>
-      </li>
-      <li>
-        <a
-          href="https://github.com/dayseam/dayseam"
-          class="transition-colors hover:text-zinc-100 focus-visible:text-zinc-100"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          GitHub
-        </a>
       </li>
     </ul>
   </nav>

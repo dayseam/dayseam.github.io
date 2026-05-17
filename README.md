@@ -6,16 +6,18 @@ The public marketing site for Dayseam, deployed to GitHub Pages at
 This repository is the **canonical home** of the site code. Open
 issues and PRs here for any change to the marketing site — the
 design, copy, connector grid, hero animation, or deploy pipeline.
-Bug reports about the desktop app still belong on the product
-monorepo at [dayseam/dayseam](https://github.com/dayseam/dayseam).
+Bug reports about the desktop app go through the **Mac App Store
+listing's support contact**; the product source repo is no longer
+public.
 
 > **Historical note:** until **DAY-171** the canonical site lived
-> in `dayseam/dayseam` under `apps/website/`, and this repo was
-> described as a "deploy mirror". That framing was accurate for
-> exactly one PR: DAY-169 proposed (but never shipped) a
-> `mirror-website.yml` sync workflow in the monorepo. DAY-171
-> retired the two-repo split and deleted `apps/website/` from the
-> monorepo — the Pages repo is the only place the site lives now.
+> in the `dayseam/dayseam` product repo under `apps/website/`,
+> and this repo was described as a "deploy mirror". That framing
+> was accurate for exactly one PR: DAY-169 proposed (but never
+> shipped) a `mirror-website.yml` sync workflow in the monorepo.
+> DAY-171 retired the two-repo split and deleted `apps/website/`
+> from the monorepo — the Pages repo is the only place the site
+> lives now.
 
 ## Why it lives in its own repo
 
@@ -89,12 +91,11 @@ The six currently-shipping connector brand marks (GitHub, GitLab,
 Jira, Confluence, Git, Outlook) and their per-theme accent hexes
 are duplicated between this repo's
 [`src/data/connectors.ts`](./src/data/connectors.ts) and the
-desktop app's
-[`apps/desktop/src/components/ConnectorLogo.tsx`](https://github.com/dayseam/dayseam/blob/master/apps/desktop/src/components/ConnectorLogo.tsx).
-When Simple Icons updates a mark upstream, or the brand palette
-moves, change both repos in the same change set. There is no CI
-gate spanning the two today; a future shared `@dayseam/ui` package
-would close that loop.
+desktop app's `apps/desktop/src/components/ConnectorLogo.tsx` in
+the (private) product repo. When Simple Icons updates a mark
+upstream, or the brand palette moves, change both repos in the
+same change set. There is no CI gate spanning the two today; a
+future shared `@dayseam/ui` package would close that loop.
 
 ## Custom domain
 

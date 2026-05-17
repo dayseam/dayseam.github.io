@@ -27,14 +27,14 @@ endorsement or affiliation.
 
 The first six (GitHub, GitLab, Jira, Confluence, Git, Microsoft Outlook) also
 ship in the Dayseam desktop app and are kept in sync by hand; the canonical
-copy in the monorepo is at
-[`apps/desktop/src/components/ConnectorLogo.tsx`](https://github.com/dayseam/dayseam/blob/master/apps/desktop/src/components/ConnectorLogo.tsx).
-If Simple Icons updates a mark upstream, change both files in the same
-monorepo PR — there is no CI gate enforcing the consistency today.
+copy in the (private) product repo lives at
+`apps/desktop/src/components/ConnectorLogo.tsx`. If Simple Icons updates a
+mark upstream, change both files in the same change set — there is no CI
+gate enforcing the consistency today.
 
 ## Dayseam brand mark — "Convergence"
 
 The Dayseam mark (`public/dayseam-mark.svg`, nav logo, favicon, og:image) is
 © Dayseam and is **not** CC0-licensed. Do not reuse it outside of Dayseam-
-related projects. The canonical brand usage guide lives in the monorepo at
-[`docs/brand/README.md`](https://github.com/dayseam/dayseam/blob/master/docs/brand/README.md).
+related projects. The canonical brand usage guide lives in the (private)
+product repo at `docs/brand/README.md`.
