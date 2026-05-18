@@ -63,6 +63,40 @@ const description =
             the store build.
           </li>
         </ul>
+
+        <div
+          class="mt-6 rounded-xl border border-white/10 bg-charcoal-900/40 p-5"
+          aria-labelledby="legacy-dmg-heading"
+        >
+          <h3 id="legacy-dmg-heading" class="text-base font-semibold text-zinc-100">
+            Legacy direct-DMG build: “Couldn’t check for updates”
+          </h3>
+          <p class="mt-3 text-sm text-zinc-400">
+            If you installed Dayseam from a direct DMG before May 2026 and the app now shows
+            <strong class="text-zinc-300"
+              >“Couldn’t check for updates: Could not fetch a valid release JSON from the remote”</strong
+            >, that is the expected end-state for the direct-download channel — it has been retired. The
+            <strong class="text-zinc-300">Mac App Store</strong> is now the only way to keep receiving updates.
+          </p>
+          <p class="mt-3 text-sm text-zinc-400">
+            The App Store build uses a different bundle id
+            (<code class="text-zinc-300">dev.dayseam.mas</code> vs the legacy
+            <code class="text-zinc-300">dev.dayseam.desktop</code>), so the two apps coexist without overwriting each
+            other — your existing local data, tokens, and reports are not touched when you install the App Store build.
+            Once you have moved over anything you want to keep, remove the old <code class="text-zinc-300">.app</code>
+            from <code class="text-zinc-300">/Applications</code>.
+          </p>
+          <p class="mt-4">
+            <a
+              href="https://apps.apple.com/us/app/dayseam/id6766103608?mt=12"
+              class="inline-flex items-center gap-1 text-sm font-medium text-strand-teal hover:text-strand-teal/80"
+              rel="noopener"
+            >
+              Install Dayseam from the Mac App Store
+              <span aria-hidden="true">→</span>
+            </a>
+          </p>
+        </div>
       </section>
 
       <section aria-labelledby="website-heading">
