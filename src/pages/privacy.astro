@@ -34,10 +34,13 @@ const description =
         <p class="mt-4">
           Dayseam is <strong class="text-zinc-200">local-first</strong>. Your reports, cached activity, and evidence
           live in a <strong class="text-zinc-200">SQLite database</strong> under your macOS user (Application Support).
-          The <strong class="text-zinc-200">direct-download</strong> build and the
-          <strong class="text-zinc-200">Mac App Store</strong> build use
+          The legacy <strong class="text-zinc-200">direct-download</strong> build
+          (<code class="text-zinc-300">dev.dayseam.desktop</code>) and the
+          <strong class="text-zinc-200">Mac App Store</strong> build
+          (<code class="text-zinc-300">dev.dayseam.mas</code>) use
           <strong class="text-zinc-200">different bundle IDs</strong>, so they keep
-          <strong class="text-zinc-200">separate</strong> database folders if both are installed.
+          <strong class="text-zinc-200">separate</strong> database folders if both are installed — remove the old copy
+          from Applications when you switch.
         </p>
         <ul class="mt-4 list-disc space-y-2 pl-5 text-zinc-400">
           <li>
@@ -47,19 +50,17 @@ const description =
           <li>
             <strong class="text-zinc-300">Network</strong>: the app contacts
             <strong class="text-zinc-200">only</strong> the services you configure (e.g. GitLab, GitHub, Atlassian,
-            Microsoft identity endpoints) plus, on the <strong class="text-zinc-200">direct-download</strong> SKU,
-            <strong class="text-zinc-200">GitHub Releases</strong> for updates. There is
+            Microsoft identity endpoints). There is
             <strong class="text-zinc-200">no Dayseam-operated cloud backend</strong> and no mandatory account.
           </li>
           <li>
             <strong class="text-zinc-300">Telemetry</strong>: the app does <strong class="text-zinc-200">not</strong> ship
-            analytics or crash-reporting SDKs. Outbound traffic is driven by your connectors and (where applicable) the
-            updater.
+            analytics or crash-reporting SDKs. Outbound traffic is driven by your connectors only.
           </li>
           <li>
-            <strong class="text-zinc-300">Mac App Store</strong>: updates come through the App Store; the in-app Tauri
-            updater is not used for that SKU. Sandboxing and entitlements follow Apple’s requirements for the store
-            build.
+            <strong class="text-zinc-300">Mac App Store</strong>: the public build is distributed through the App Store;
+            updates come through Apple’s standard mechanism. Sandboxing and entitlements follow Apple’s requirements for
+            the store build.
           </li>
         </ul>
       </section>

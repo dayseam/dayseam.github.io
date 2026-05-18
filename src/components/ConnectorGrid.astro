@@ -23,17 +23,16 @@
 //   because the pitches are short enough to wrap to two or three
 //   lines either way.
 //
-// "Open a connector request" link (DAY-210):
-//   The link uses `?labels=enhancement&title=Connector+request:+`
-//   instead of an issue-template URL because dayseam/dayseam does
-//   not currently ship `.github/ISSUE_TEMPLATE/connector_request.md`
-//   nor a `connector` label. The previous URL referenced both,
-//   which silently no-op'd both query params on GitHub's side and
-//   dropped the visitor onto a generic blank issue with no signal
-//   that they'd asked for a connector. `enhancement` is one of the
-//   default labels that does exist on the repo; the title prefix
-//   carries the "connector request" intent without requiring an
-//   issue template that may or may not survive future repo cleanup.
+// "Open a connector request" link removed (Mac-App-Store cutover):
+//   The connector-request CTA used to deep-link into the public
+//   dayseam/dayseam issue tracker. With the source repo going
+//   private (App Store distribution is now the only channel), that
+//   link would 404 and there is no public-issue surface to repoint
+//   it at. The privacy page is explicit that the marketing site
+//   "does not operate a separate helpdesk inbox" — feature requests
+//   are funnelled through the Mac App Store listing's support
+//   contact instead — so the section keeps the "On deck" prose as
+//   a forward-looking signal without an outbound CTA.
 import { SHIPPING, COMING_SOON } from "~/data/connectors";
 ---
 
@@ -108,14 +107,6 @@ import { SHIPPING, COMING_SOON } from "~/data/connectors";
   </ul>
 
   <p class="mx-auto mt-12 max-w-2xl text-center text-sm text-zinc-500">
-    Want a source that isn't here yet?
-    <a
-      href="https://github.com/dayseam/dayseam/issues/new?labels=enhancement&title=Connector%20request%3A%20"
-      class="text-cream hover:underline focus-visible:underline"
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Open a connector request →
-    </a>
+    More land in regular updates through the Mac App Store.
   </p>
 </section>

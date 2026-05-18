@@ -1,33 +1,25 @@
 ---
-// DAY-166 / DAY-206. The single conversion CTA.
+// DAY-166 / DAY-206 / Mac-App-Store cutover. The single conversion CTA.
 //
-// The href points at GitHub's
-// `/releases/latest/download/Dayseam.dmg` redirect: a stable,
-// version-agnostic URL that 302s to whatever the most recent
-// release's `Dayseam.dmg` asset is. The release workflow at
-// `dayseam/dayseam` (`.github/workflows/release.yml`, DAY-206)
-// uploads `Dayseam.dmg` as an alias next to the versioned
-// `Dayseam-v${VERSION}.dmg` on every release, so this URL never
-// goes stale. The browser reads `Content-Disposition: attachment`
-// off the redirected response and starts the download immediately
-// — the user no longer has to land on the GitHub release page and
-// hunt for the right asset, which was the previous behaviour and
-// the single biggest friction point in the install flow.
+// Dayseam now distributes exclusively through the Mac App Store
+// (bundle ID `dev.dayseam.mas`, Apple ID `6766103608`). The
+// previous direct-download SKU (`dev.dayseam.desktop`, served via
+// GitHub Releases as `Dayseam.dmg`) has been sunset along with
+// the public `dayseam/dayseam` source repo, so the old
+// `releases/latest/download/Dayseam.dmg` redirect URL and the
+// `View source on GitHub` companion link are both gone — the
+// former would 404 once the source repo flips to private (the
+// release-assets URL is gated on repo visibility), and the
+// latter would 404 immediately.
 //
-// We avoid:
-//   - hardcoding `Dayseam-v${VERSION}.dmg` (404s the moment a new
-//     release publishes — GitHub's redirect needs a byte-exact
-//     filename, no globs);
-//   - resolving the asset URL client-side via `api.github.com`
-//     (adds JS to a static Astro page and hits the
-//     60-req/hr-per-IP unauthenticated rate limit on shared
-//     corporate NAT egresses).
-//
-// The "View source on GitHub" link below stays unchanged — users
-// who want the changelog or want to inspect the binary still have
-// a one-click path to the repo from this section. Anyone landing
-// here from the keyboard with download-blocked browsers can also
-// follow that link to the release page manually.
+// The CTA itself is now Apple's "Download on the Mac App Store"
+// badge, inlined as self-contained SVG so it deploys to GitHub
+// Pages without an extra asset round-trip and tracks colour-scheme
+// changes via `currentColor`-free fills (the badge is a fixed
+// black/white treatment per Apple's brand guidelines and must not
+// adapt to the surrounding theme). The href carries the `?mt=12`
+// Mac-specific marker so the App Store opens straight to the macOS
+// listing rather than picking a platform from the user's session.
 ---
 
 <section
@@ -40,48 +32,65 @@
       Ready in about a minute
     </h2>
     <p class="mt-4 text-balance text-zinc-400">
-      Signed and notarized macOS build. Apple Silicon or Intel, same DMG.
-      No installer account, no uninstaller to hunt down later
+      Signed, notarized, and distributed through the Mac App Store. Apple Silicon
+      or Intel, same install. No installer account, no uninstaller to hunt down later
     </p>
 
-    <div class="mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+    <div class="mt-10 flex flex-col items-center justify-center gap-4">
       <a
-        href="https://github.com/dayseam/dayseam/releases/latest/download/Dayseam.dmg"
-        class="inline-flex items-center gap-2 rounded-lg bg-cream px-6 py-3 text-sm font-semibold text-charcoal-900 transition-transform hover:scale-[1.02] focus-visible:scale-[1.02]"
-        rel="noopener noreferrer"
+        href="https://apps.apple.com/us/app/dayseam/id6766103608?mt=12"
+        class="inline-block rounded-xl transition-transform hover:scale-[1.02] focus-visible:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/50"
+        aria-label="Download Dayseam on the Mac App Store"
       >
-        Download for macOS
-        <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true">
-          <path
-            d="M12 3v12m0 0 5-5m-5 5-5-5M5 21h14"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            fill="none"
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 240 80"
+          role="img"
+          aria-hidden="true"
+          class="h-14 w-auto"
+        >
+          <title>Download on the Mac App Store</title>
+          <rect
+            x="1"
+            y="1"
+            width="238"
+            height="78"
+            rx="13"
+            fill="#000"
+            stroke="#a6a6a6"
+            stroke-width="1"
           />
+          <g fill="#fff" transform="translate(22 22) scale(1.6)">
+            <path
+              d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"
+            />
+          </g>
+          <text
+            x="78"
+            y="34"
+            font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="12"
+            fill="#fff"
+          >
+            Download on the
+          </text>
+          <text
+            x="78"
+            y="59"
+            font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+            font-size="22"
+            font-weight="600"
+            fill="#fff"
+            letter-spacing="-0.4"
+          >
+            Mac App Store
+          </text>
         </svg>
-      </a>
-      <a
-        href="https://github.com/dayseam/dayseam"
-        class="inline-flex items-center gap-2 rounded-lg border border-white/10 px-6 py-3 text-sm font-medium text-zinc-100 transition-colors hover:bg-white/5 focus-visible:bg-white/5"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        View source on GitHub
       </a>
     </div>
 
     <p class="mt-6 text-xs text-zinc-500">
       Windows and Linux builds are on the post v1.0 roadmap.
-      <a
-        href="https://github.com/dayseam/dayseam/issues?q=is%3Aissue+label%3Aplatform"
-        class="underline hover:text-zinc-300 focus-visible:text-zinc-300"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Track platform issues on GitHub
-      </a>
       <span class="text-zinc-600"> · </span>
       <a href="/privacy" class="underline hover:text-zinc-300 focus-visible:text-zinc-300">Privacy policy</a>
     </p>
