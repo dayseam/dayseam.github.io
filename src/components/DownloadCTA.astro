@@ -1,25 +1,21 @@
 ---
-// DAY-166 / DAY-206 / Mac-App-Store cutover. The single conversion CTA.
+// DAY-166 / DAY-206 / Mac-App-Store cutover / Windows direct download.
 //
-// Dayseam now distributes exclusively through the Mac App Store
-// (bundle ID `dev.dayseam.mas`, Apple ID `6766103608`). The
-// previous direct-download SKU (`dev.dayseam.desktop`, served via
-// GitHub Releases as `Dayseam.dmg`) has been sunset along with
-// the public `dayseam/dayseam` source repo, so the old
-// `releases/latest/download/Dayseam.dmg` redirect URL and the
-// `View source on GitHub` companion link are both gone — the
-// former would 404 once the source repo flips to private (the
-// release-assets URL is gated on repo visibility), and the
-// latter would 404 immediately.
+// macOS: Apple's "Download on the Mac App Store" badge (MAS is the
+// only macOS channel after the DAY-328 distribution sunset).
 //
-// The CTA itself is now Apple's "Download on the Mac App Store"
-// badge, inlined as self-contained SVG so it deploys to GitHub
-// Pages without an extra asset round-trip and tracks colour-scheme
-// changes via `currentColor`-free fills (the badge is a fixed
-// black/white treatment per Apple's brand guidelines and must not
-// adapt to the surrounding theme). The href carries the `?mt=12`
-// Mac-specific marker so the App Store opens straight to the macOS
-// listing rather than picking a platform from the user's session.
+// Windows: direct NSIS installer hosted on this site at
+// `/downloads/Dayseam-x64-setup.exe`. The stable alias is refreshed by
+// the product repo's `publish-windows-download.yml` workflow on
+// each Windows release; until the first publish lands the button
+// exists but the file 404s — run that workflow before announcing.
+import {
+  MAC_APP_STORE_URL,
+  MAC_REQUIREMENTS,
+  WINDOWS_REQUIREMENTS,
+  WINDOWS_SETUP_PATH,
+  WINDOWS_SETUP_SHA256_PATH,
+} from "~/data/downloads";
 ---
 
 <section
@@ -27,72 +23,150 @@
   class="border-y border-white/5 bg-gradient-to-b from-charcoal-900/80 to-charcoal-800/80 py-24"
   aria-label="Download Dayseam"
 >
-  <div class="mx-auto max-w-3xl px-6 text-center">
+  <div class="mx-auto max-w-4xl px-6 text-center">
     <h2 class="text-balance text-3xl font-semibold text-zinc-50 sm:text-4xl">
       Ready in about a minute
     </h2>
     <p class="mt-4 text-balance text-zinc-400">
-      Signed, notarized, and distributed through the Mac App Store. Apple Silicon
-      or Intel, same install. No installer account, no uninstaller to hunt down later
+      Free for macOS and Windows. No Dayseam account, no cloud sync, no uninstaller
+      to hunt down later
     </p>
 
-    <div class="mt-10 flex flex-col items-center justify-center gap-4">
-      <a
-        href="https://apps.apple.com/us/app/dayseam/id6766103608?mt=12"
-        class="inline-block rounded-xl transition-transform hover:scale-[1.02] focus-visible:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/50"
-        aria-label="Download Dayseam on the Mac App Store"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 240 80"
-          role="img"
-          aria-hidden="true"
-          class="h-14 w-auto"
+    <div
+      class="mx-auto mt-10 grid max-w-3xl gap-8 sm:grid-cols-[1fr_auto_1fr] sm:items-start"
+    >
+      <div class="flex flex-col items-center text-center">
+        <p
+          class="flex h-5 items-center font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500"
         >
-          <title>Download on the Mac App Store</title>
-          <rect
-            x="1"
-            y="1"
-            width="238"
-            height="78"
-            rx="13"
-            fill="#000"
-            stroke="#a6a6a6"
-            stroke-width="1"
-          />
-          <g fill="#fff" transform="translate(22 22) scale(1.6)">
-            <path
-              d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"
-            />
-          </g>
-          <text
-            x="78"
-            y="34"
-            font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif"
-            font-size="12"
-            fill="#fff"
+          macOS
+        </p>
+        <div class="mt-3 flex h-14 w-full items-center justify-center">
+          <a
+            href={MAC_APP_STORE_URL}
+            class="inline-block rounded-xl transition-transform hover:scale-[1.02] focus-visible:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/50"
+            aria-label="Download Dayseam on the Mac App Store"
+            target="_blank"
+            rel="noopener noreferrer"
           >
-            Download on the
-          </text>
-          <text
-            x="78"
-            y="59"
-            font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif"
-            font-size="22"
-            font-weight="600"
-            fill="#fff"
-            letter-spacing="-0.4"
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 240 80"
+              role="img"
+              aria-hidden="true"
+              class="h-14 w-auto"
+            >
+              <title>Download on the Mac App Store</title>
+              <rect
+                x="1"
+                y="1"
+                width="238"
+                height="78"
+                rx="13"
+                fill="#000"
+                stroke="#a6a6a6"
+                stroke-width="1"
+              />
+              <g fill="#fff" transform="translate(22 22) scale(1.6)">
+                <path
+                  d="M17.05 20.28c-.98.95-2.05.8-3.08.35-1.09-.46-2.09-.48-3.24 0-1.44.62-2.2.44-3.06-.35C2.79 15.25 3.51 7.59 9.05 7.31c1.35.07 2.29.74 3.08.8 1.18-.24 2.31-.93 3.57-.84 1.51.12 2.65.72 3.4 1.8-3.12 1.87-2.38 5.98.48 7.13-.57 1.5-1.31 2.99-2.54 4.09zM12.03 7.25c-.15-2.23 1.66-4.07 3.74-4.25.29 2.58-2.34 4.5-3.74 4.25z"
+                />
+              </g>
+              <text
+                x="78"
+                y="34"
+                font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-size="12"
+                fill="#fff"
+              >
+                Download on the
+              </text>
+              <text
+                x="78"
+                y="59"
+                font-family="-apple-system, BlinkMacSystemFont, 'Helvetica Neue', Helvetica, Arial, sans-serif"
+                font-size="22"
+                font-weight="600"
+                fill="#fff"
+                letter-spacing="-0.4"
+              >
+                Mac App Store
+              </text>
+            </svg>
+          </a>
+        </div>
+        <p class="mt-3 min-h-[2.75rem] max-w-xs text-xs text-zinc-500">
+          {MAC_REQUIREMENTS}
+        </p>
+        <p class="mt-1 flex h-5 items-center justify-center text-xs" aria-hidden="true">
+          <span class="invisible">SHA-256 checksum</span>
+        </p>
+      </div>
+
+      <div
+        class="hidden w-px self-stretch bg-white/10 sm:block"
+        aria-hidden="true"
+      >
+      </div>
+
+      <div class="flex flex-col items-center text-center">
+        <p
+          class="flex h-5 items-center font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500"
+        >
+          Windows
+        </p>
+        <div class="mt-3 flex h-14 w-full items-center justify-center">
+          <a
+            href={WINDOWS_SETUP_PATH}
+            class="inline-flex min-h-[56px] min-w-[240px] items-center justify-center gap-3 rounded-xl border border-white/15 bg-zinc-950 px-6 py-3 text-left transition-transform hover:scale-[1.02] hover:border-white/25 focus-visible:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cream/50"
+            aria-label="Download Dayseam for Windows (64-bit installer)"
+            download
           >
-            Mac App Store
-          </text>
-        </svg>
-      </a>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              role="img"
+              aria-hidden="true"
+              class="h-6 w-6 shrink-0 text-strand-teal"
+            >
+              <title>Windows</title>
+              <path
+                fill="currentColor"
+                d="M3 5.5 10.5 4.2v7.1H3V5.5zm0 8.4h7.5v7.1L3 19.7V13.9zm9.2-9.6L21 2.3v8.9h-8.8V4.3zm0 10.6H21v8.9l-8.8-1.5v-7.4z"
+              />
+            </svg>
+            <span class="flex flex-col">
+              <span
+                class="text-[11px] font-medium uppercase tracking-[0.14em] text-zinc-400"
+              >
+                Download for
+              </span>
+              <span class="text-lg font-semibold leading-tight text-zinc-50">
+                Windows (64-bit)
+              </span>
+            </span>
+          </a>
+        </div>
+        <p class="mt-3 min-h-[2.75rem] max-w-xs text-xs text-zinc-500">
+          {WINDOWS_REQUIREMENTS}
+        </p>
+        <p class="mt-1 flex h-5 items-center justify-center text-xs text-zinc-600">
+          <a
+            href={WINDOWS_SETUP_SHA256_PATH}
+            class="underline decoration-zinc-700 underline-offset-2 hover:text-zinc-400 focus-visible:text-zinc-400"
+          >
+            SHA-256 checksum
+          </a>
+        </p>
+      </div>
     </div>
 
-    <p class="mt-6 text-xs text-zinc-500">
-      Windows and Linux builds are on the post v1.0 roadmap.
+    <p class="mt-8 text-xs text-zinc-500">
+      Linux builds are on the post-v1.0 roadmap.
       <span class="text-zinc-600"> · </span>
-      <a href="/privacy" class="underline hover:text-zinc-300 focus-visible:text-zinc-300">Privacy policy</a>
+      <a href="/privacy" class="underline hover:text-zinc-300 focus-visible:text-zinc-300"
+        >Privacy policy</a
+      >
     </p>
   </div>
 </section>

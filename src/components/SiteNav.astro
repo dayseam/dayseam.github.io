@@ -11,15 +11,10 @@
 // `/privacy` → home sections). `/privacy` is the App Store–friendly
 // public policy page.
 //
-// DAY-173 removed the top-right "Download for macOS" CTA. The
-// page already has a dedicated DownloadCTA section at the bottom
-// with the same "Ready in about a minute" copy and the same
-// install surface (now the Mac App Store badge, since the
-// Mac-App-Store cutover sunset the direct-download SKU), so the
-// top button was a duplicate conversion surface rather than a
-// second funnel. Keeping a single download CTA also lets the nav
-// stay quiet enough to not compete with the hero animation
-// immediately below it.
+// DAY-173 removed the top-right download CTA. The page already has a
+// dedicated DownloadCTA section at the bottom with platform-specific
+// install surfaces (Mac App Store + Windows installer), so a duplicate
+// nav button would compete with the hero animation immediately below.
 //
 // The Mac-App-Store cutover additionally removed the outbound
 // "GitHub" link from the right end of the nav: the product source

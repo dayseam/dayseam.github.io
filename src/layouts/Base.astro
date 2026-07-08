@@ -92,6 +92,11 @@ import SiteNav from "../components/SiteNav.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import Analytics from "../components/Analytics.astro";
 import CookieConsent from "../components/CookieConsent.astro";
+import {
+  MAC_APP_STORE_URL,
+  SOFTWARE_VERSION,
+  windowsSetupUrl,
+} from "~/data/downloads";
 
 interface Props {
   title?: string;
@@ -100,7 +105,7 @@ interface Props {
 
 const {
   title = "Dayseam — the daily work report, written from evidence",
-  description = "Dayseam is a free, local-first daily work report app for engineers. It stitches evidence from GitHub, GitLab, Jira, Confluence, Outlook, and your local git repos into an editable end-of-day report, and saves it to Markdown or your Obsidian vault. No account, no cloud, no app telemetry.",
+  description = "Dayseam is a free, local-first daily work report app for engineers on macOS and Windows. It stitches evidence from GitHub, GitLab, Jira, Confluence, Outlook, and your local git repos into an editable end-of-day report, and saves it to Markdown or your Obsidian vault. No account, no cloud, no app telemetry.",
 } = Astro.props;
 
 const siteOrigin = Astro.site ?? new URL("https://dayseam.github.io");
@@ -137,10 +142,13 @@ const softwareApplicationLd = {
   name: "Dayseam",
   description,
   applicationCategory: "DeveloperApplication",
-  operatingSystem: "macOS 12 or later",
+  operatingSystem: "macOS 12 or later, Windows 10 22H2 or later",
   url: siteOrigin.toString(),
-  downloadUrl: "https://apps.apple.com/us/app/dayseam/id6766103608?mt=12",
-  softwareVersion: "0.9",
+  downloadUrl: [
+    MAC_APP_STORE_URL,
+    windowsSetupUrl(siteOrigin.toString()),
+  ],
+  softwareVersion: SOFTWARE_VERSION,
   image: ogImageUrl,
   offers: {
     "@type": "Offer",
