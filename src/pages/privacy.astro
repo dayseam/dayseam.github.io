@@ -1,9 +1,10 @@
 ---
 import Base from "../layouts/Base.astro";
+import { MAC_APP_STORE_URL } from "~/data/downloads";
 
 const title = "Privacy — Dayseam";
 const description =
-  "How Dayseam handles your data: the desktop app (local-first, Keychain, no telemetry) and this marketing site (optional analytics with consent).";
+  "How Dayseam handles your data: the desktop app (local-first, OS credential store, no telemetry) and this marketing site (optional analytics with consent).";
 ---
 
 <Base {title} {description}>
@@ -33,19 +34,23 @@ const description =
         <h2 id="desktop-heading" class="text-xl font-semibold text-zinc-50">Dayseam desktop app</h2>
         <p class="mt-4">
           Dayseam is <strong class="text-zinc-200">local-first</strong>. Your reports, cached activity, and evidence
-          live in a <strong class="text-zinc-200">SQLite database</strong> under your macOS user (Application Support).
-          The legacy <strong class="text-zinc-200">direct-download</strong> build
-          (<code class="text-zinc-300">dev.dayseam.desktop</code>) and the
+          live in a <strong class="text-zinc-200">SQLite database</strong> under your platform application-data
+          directory — <code class="text-zinc-300">~/Library/Application Support/</code> on macOS or
+          <code class="text-zinc-300">%APPDATA%</code> on Windows — in a subfolder named for the installed bundle
+          identifier. The legacy <strong class="text-zinc-200">direct-download</strong> macOS build
+          (<code class="text-zinc-300">dev.dayseam.desktop</code>), the
           <strong class="text-zinc-200">Mac App Store</strong> build
-          (<code class="text-zinc-300">dev.dayseam.mas</code>) use
-          <strong class="text-zinc-200">different bundle IDs</strong>, so they keep
-          <strong class="text-zinc-200">separate</strong> database folders if both are installed — remove the old copy
-          from Applications when you switch.
+          (<code class="text-zinc-300">dev.dayseam.mas</code>), and the
+          <strong class="text-zinc-200">Windows</strong> build (currently also
+          <code class="text-zinc-300">dev.dayseam.desktop</code>) use
+          <strong class="text-zinc-200">different bundle IDs</strong> where the platform differs, so they keep
+          <strong class="text-zinc-200">separate</strong> database folders if more than one is installed.
         </p>
         <ul class="mt-4 list-disc space-y-2 pl-5 text-zinc-400">
           <li>
             <strong class="text-zinc-300">Secrets</strong> (personal access tokens, API tokens, OAuth refresh tokens)
-            are stored in the <strong class="text-zinc-200">macOS Keychain</strong>, not in plaintext in the database.
+            are stored in your <strong class="text-zinc-200">operating-system credential store</strong> (macOS Keychain
+            or Windows Credential Manager), not in plaintext in the database.
           </li>
           <li>
             <strong class="text-zinc-300">Network</strong>: the app contacts
@@ -58,9 +63,15 @@ const description =
             analytics or crash-reporting SDKs. Outbound traffic is driven by your connectors only.
           </li>
           <li>
-            <strong class="text-zinc-300">Mac App Store</strong>: the public build is distributed through the App Store;
-            updates come through Apple’s standard mechanism. Sandboxing and entitlements follow Apple’s requirements for
-            the store build.
+            <strong class="text-zinc-300">Mac App Store</strong>: the public macOS build is distributed through the App
+            Store; updates come through Apple’s standard mechanism. Sandboxing and entitlements follow Apple’s
+            requirements for the store build.
+          </li>
+          <li>
+            <strong class="text-zinc-300">Windows</strong>: the public build is a direct installer from this site
+            (<a href="/#download" class="text-strand-teal underline decoration-strand-teal/40 underline-offset-2"
+              >download section</a
+            >). Updates are manual — download and run the latest installer when a new version ships.
           </li>
         </ul>
 
@@ -88,7 +99,7 @@ const description =
           </p>
           <p class="mt-4">
             <a
-              href="https://apps.apple.com/us/app/dayseam/id6766103608?mt=12"
+              href={MAC_APP_STORE_URL}
               class="inline-flex items-center gap-1 text-sm font-medium text-strand-teal hover:text-strand-teal/80"
               rel="noopener"
             >

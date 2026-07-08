@@ -5,10 +5,16 @@ The public marketing site for Dayseam, deployed to GitHub Pages at
 
 This repository is the **canonical home** of the site code. Open
 issues and PRs here for any change to the marketing site — the
-design, copy, connector grid, hero animation, or deploy pipeline.
-Bug reports about the desktop app go through the **Mac App Store
-listing's support contact**; the product source repo is no longer
-public.
+design, copy, connector grid, hero animation, download buttons, or
+deploy pipeline.
+
+macOS installs go through the [Mac App Store](https://apps.apple.com/us/app/dayseam/id6766103608?mt=12).
+Windows installs use the direct NSIS installer hosted here at
+[`/downloads/Dayseam-x64-setup.exe`](https://dayseam.github.io/downloads/Dayseam-x64-setup.exe)
+(refreshed by the product repo's `publish-windows-download` workflow).
+Bug reports about the desktop app go through the support contact on
+the Mac App Store listing or the product channel that shipped your
+build; the product source repo is no longer public.
 
 > **Historical note:** until **DAY-171** the canonical site lived
 > in the `dayseam/dayseam` product repo under `apps/website/`,
