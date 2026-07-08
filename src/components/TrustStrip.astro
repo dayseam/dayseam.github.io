@@ -10,11 +10,12 @@
 //                         home dir.
 //   - No account       → there is literally no login screen, the
 //                         app never talks to a Dayseam server.
-//   - Keychain tokens  → crates/dayseam-secrets keys credentials
+//   - OS credential store → crates/dayseam-secrets keys credentials
 //                         (PATs and OAuth tokens, including
 //                         Outlook's refresh token added in
 //                         DAY-210) by `service::account`; never
-//                         on disk.
+//                         on disk. macOS Keychain on Mac, Windows
+//                         Credential Manager on Windows.
 //   - No telemetry     → the desktop CSP denies any host not named
 //                         in the user's own source configs.
 //
@@ -59,11 +60,11 @@
 
     <div>
       <p class="font-mono text-[11px] uppercase tracking-[0.2em] text-strand-coral">
-        Keychain tokens
+        OS credential store
       </p>
       <p class="mt-2 text-sm text-zinc-300">
         Connector credentials — PATs and OAuth refresh tokens — live in your
-        macOS Keychain, never in plaintext on disk
+        operating-system credential store, never in plaintext on disk
       </p>
     </div>
 
